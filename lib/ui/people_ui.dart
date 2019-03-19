@@ -12,6 +12,41 @@ class PeopleListUI extends StatefulWidget {
 
 class PeopleUI extends State<PeopleListUI> {
 
+  Widget _buildItemAsCard(AsyncSnapshot<List<PeopleModel>> snapshot, int index) {
+    return new Card(
+      child: Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Chip(
+                avatar: CircleAvatar(
+                  backgroundColor: Colors.green,
+                  child: Text(snapshot.data.elementAt(index).Name[0] + snapshot.data.elementAt(index).Surname[0]),
+                ),
+                label: Text(snapshot.data.elementAt(index).Name + snapshot.data.elementAt(index).Surname),
+              )
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              new Center(
+                child: Text(snapshot.data.elementAt(index).Name + snapshot.data.elementAt(index).Surname),
+              )
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(2.0),
+                child: IconButton(icon: new Icon(Icons.cloud_done), onPressed: () => {}),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     bloc.fetchAllPeople();
@@ -21,9 +56,9 @@ class PeopleUI extends State<PeopleListUI> {
       ),
       body: StreamBuilder(
         stream: bloc.AllPeople,
-        builder: (context, AsyncSnapshot<PeopleModel> snapshot) {
+        builder: (context, AsyncSnapshot<List<PeopleModel>> snapshot) {
           if (snapshot.hasData) {
-            return buildList(snapshot);
+            return buildItems(snapshot);
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
@@ -35,16 +70,14 @@ class PeopleUI extends State<PeopleListUI> {
   }
 
   /* TODO build as truly list */
-  Widget buildList(AsyncSnapshot<PeopleModel> snapshot) {
+  Widget buildItems(AsyncSnapshot<List<PeopleModel>> snapshot) {
     return new GridView.builder(
-      itemCount: snapshot.data.people.length,
+      itemCount: snapshot.data.length,
       gridDelegate:
           new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
       itemBuilder: (BuildContext context, int index) {
         /* TODO Card layout */
-        return Text(snapshot.data.people[index].Name +
-            " " +
-            snapshot.data.people[index].Surname);
+        return _buildItemAsCard(snapshot, index);
       },
     );
   }

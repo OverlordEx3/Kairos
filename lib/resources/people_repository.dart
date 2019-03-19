@@ -7,5 +7,5 @@ class PeopleRepository {
 
   /* TODO replace this mock*/
 
-  Future<PeopleModel> FetchAllPeople() => _peopleProvider.FetchPeople();
+  Future<List<PeopleModel>> FetchAllPeople() => _peopleProvider.FetchPeople();
 }
