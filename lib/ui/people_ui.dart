@@ -3,47 +3,58 @@ import 'package:flutter/material.dart';
 import '../blocs/people_bloc.dart';
 import '../models/people_model.dart';
 
+/* Other related UIs */
+import 'people_card.dart';
+
 class PeopleListUI extends StatefulWidget {
   @override
-  State<StatefulWidget> createState()  {
+  State<StatefulWidget> createState() {
     return PeopleUI();
   }
 }
 
 class PeopleUI extends State<PeopleListUI> {
-
-  Widget _buildItemAsCard(AsyncSnapshot<List<PeopleModel>> snapshot, int index) {
+  Widget _buildItemAsCard(
+      AsyncSnapshot<List<PeopleModel>> snapshot, int index) {
     return new Card(
-      child: Column(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Chip(
-                avatar: CircleAvatar(
-                  backgroundColor: Colors.green,
-                  child: Text(snapshot.data.elementAt(index).Name[0] + snapshot.data.elementAt(index).Surname[0]),
-                ),
-                label: Text(snapshot.data.elementAt(index).Name + snapshot.data.elementAt(index).Surname),
-              )
-            ],
-          ),
-          Row(
-            children: <Widget>[
-              new Center(
-                child: Text(snapshot.data.elementAt(index).Name + snapshot.data.elementAt(index).Surname),
-              )
-            ],
-          ),
-          Row(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(2.0),
-                child: IconButton(icon: new Icon(Icons.cloud_done), onPressed: () => {}),
-              )
-            ],
-          )
-        ],
-      ),
+      child: Column(children: <Widget>[
+        Row(
+          children: <Widget>[
+            CircleAvatar(
+              backgroundColor: Colors.deepPurple,
+              backgroundImage: (snapshot.data.elementAt(index).Image != null
+                  ? (new Image.memory(
+                      snapshot.data.elementAt(index).Image.getBytes()))
+                  : new Image.network(
+                          "https://www.andiar.com/4186-thickbox_default/vinilo-brujula.jpg")
+                      .image),
+            ),
+            new Text(
+              snapshot.data.elementAt(index).Name +
+                  " " +
+                  snapshot.data.elementAt(index).Surname,
+              textAlign: TextAlign.center,
+              style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ],
+        ),
+        Row(
+          children: <Widget>[
+            new Expanded(child: new Text(" Actually, no data. Sorry!"))
+          ],
+        ),
+        Expanded(
+            child: Align(
+                child: Row(
+          children: <Widget>[
+            new IconButton(
+              icon: new Icon(Icons.grade),
+              onPressed: null,
+              alignment: FractionalOffset.bottomRight,
+            )
+          ],
+        )))
+      ]),
     );
   }
 
@@ -77,7 +88,7 @@ class PeopleUI extends State<PeopleListUI> {
           new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
       itemBuilder: (BuildContext context, int index) {
         /* TODO Card layout */
-        return _buildItemAsCard(snapshot, index);
+        return PeopleCard(snapshot.data[index]);
       },
     );
   }
