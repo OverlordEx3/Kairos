@@ -14,7 +14,7 @@ class PeopleListUI extends StatefulWidget {
 }
 
 class PeopleUI extends State<PeopleListUI> {
-  Widget _buildItemAsCard(
+/*  Widget _buildItemAsCard(
       AsyncSnapshot<List<PeopleModel>> snapshot, int index) {
     return new Card(
       child: Column(children: <Widget>[
@@ -57,13 +57,13 @@ class PeopleUI extends State<PeopleListUI> {
       ]),
     );
   }
-
+*/
   @override
   Widget build(BuildContext context) {
     bloc.fetchAllPeople();
     return Scaffold(
       appBar: AppBar(
-        title: new Text("Count me in!"),
+        title: new Text("Kairos", style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.w800),),
       ),
       body: StreamBuilder(
         stream: bloc.AllPeople,
@@ -76,6 +76,7 @@ class PeopleUI extends State<PeopleListUI> {
           return Center(child: new CircularProgressIndicator());
         },
       ),
+      floatingActionButton: new FloatingActionButton(onPressed: () => {}, child: Icon(Icons.add),),
     );
     return null;
   }

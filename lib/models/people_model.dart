@@ -1,4 +1,4 @@
-import 'package:image/image.dart' as img;
+import 'package:flutter/material.dart';
 
 class PeopleModel {
   int _uid;
@@ -8,15 +8,13 @@ class PeopleModel {
   String _surname;
   DateTime _birthdate;
   int _docId; //Personal ID. Passport, NID, etc.
-  img.Image _profile; //Profile picture
 
-  PeopleModel(int uid, String name, String surname, DateTime birthdate, int docID, {img.Image profile = null}) {
+  PeopleModel(int uid, String name, String surname, DateTime birthdate, int docID) {
     _uid = uid;
     _name = name;
     _surname = surname;
     _birthdate = birthdate;
     _docId = docID;
-    _profile = profile;
   }
 
   /* Getters */
@@ -27,6 +25,4 @@ class PeopleModel {
   DateTime get Birthdate => _birthdate;
 
   int get ID => _docId;
-
-  img.Image get Image => _profile;
 }
