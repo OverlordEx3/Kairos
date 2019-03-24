@@ -7,21 +7,32 @@ import '../models/people_model.dart';
 import 'people_card.dart';
 import 'people_listitem.dart';
 
-class PeopleListUI extends StatefulWidget {
+class PeopleUI extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return PeopleUI();
+    return PeopleUIState();
   }
 }
 
-class PeopleUI extends State<PeopleListUI> {
+class PeopleUIState extends State<PeopleUI> {
 
   /* TODO Mocked value */
   final bool _viewAsList = true;
 
   @override
-  Widget build(BuildContext context) {
+  initState(){
+    super.initState();
     bloc.fetchAllPeople();
+  }
+
+  @override
+  dispose() {
+    bloc.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: new Text("Kairos", style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.w800),),
@@ -42,7 +53,6 @@ class PeopleUI extends State<PeopleListUI> {
     return null;
   }
 
-  /* TODO build as truly list */
   Widget buildItems(AsyncSnapshot<List<PeopleModel>> snapshot) {
     if(_viewAsList == true) {
       return new ListView.builder(itemBuilder: (BuildContext context, int index) {
@@ -56,7 +66,6 @@ class PeopleUI extends State<PeopleListUI> {
         gridDelegate:
         new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemBuilder: (BuildContext context, int index) {
-          /* TODO Card layout */
           return PeopleCard(snapshot.data[index]);
         },
       );
