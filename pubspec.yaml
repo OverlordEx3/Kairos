@@ -26,6 +26,8 @@ dependencies:
   image: ^2.0.7
   #Improves support for streams and reactive design
   rxdart: ^0.21.0
+  #Add support for requests
+  http: ^0.12.0+1
 
 dev_dependencies:
   flutter_test:

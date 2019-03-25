@@ -9,6 +9,10 @@ class PeopleListItem extends StatelessWidget {
     _people = model;
   }
 
+  ImageProvider _getImageFromModel() {
+
+  }
+
   Widget _imageHeader(BuildContext context) {
     return new CircleAvatar(
       backgroundImage: Image.network(
@@ -22,7 +26,6 @@ class PeopleListItem extends StatelessWidget {
     return new Expanded(
         child: Container(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         new Text(
           _people.Name + " " + _people.Surname,
