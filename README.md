@@ -1,6 +1,6 @@
-# count_me_in
+# Kairos
 
-CountMeIn - Assistance tracker for scouts groups
+Kairos - Assistance tracker for scouts groups
 
 ## Getting Started
 
