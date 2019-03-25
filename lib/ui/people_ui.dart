@@ -3,45 +3,80 @@ import 'package:flutter/material.dart';
 import '../blocs/people_bloc.dart';
 import '../models/people_model.dart';
 
-class PeopleListUI extends StatefulWidget {
+/* Other related UIs */
+import 'people_card.dart';
+import 'people_listitem.dart';
+
+class PeopleUI extends StatefulWidget {
   @override
-  State<StatefulWidget> createState()  {
-    return PeopleUI();
+  State<StatefulWidget> createState() {
+    return PeopleUIState();
   }
 }
 
-class PeopleUI extends State<PeopleListUI> {
+class PeopleUIState extends State<PeopleUI> {
+  /* TODO Mocked value */
+  /* TODO fetch value from storage */
+  bool _viewAsList = true;
 
-  Widget _buildItemAsCard(AsyncSnapshot<List<PeopleModel>> snapshot, int index) {
-    return new Card(
+  @override
+  initState() {
+    super.initState();
+    bloc.fetchAllPeople();
+  }
+
+  @override
+  dispose() {
+    bloc.dispose();
+    super.dispose();
+  }
+
+  bool _uiViewAsList() {
+    return _viewAsList;
+  }
+
+  Icon _getIconByViewState(bool viewState) {
+    return Icon(viewState == true ? Icons.view_list : Icons.view_agenda);
+  }
+
+  /* Widget body */
+  Widget _bodyBuilder(BuildContext context) {
+    return new Container(
+      margin: EdgeInsets.all(1.0),
       child: Column(
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              Chip(
-                avatar: CircleAvatar(
-                  backgroundColor: Colors.green,
-                  child: Text(snapshot.data.elementAt(index).Name[0] + snapshot.data.elementAt(index).Surname[0]),
-                ),
-                label: Text(snapshot.data.elementAt(index).Name + snapshot.data.elementAt(index).Surname),
+          /* Bar selecting view as card/list */
+          Container(
+            alignment: Alignment.centerRight,
+            constraints: BoxConstraints(maxHeight: 30),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  IconButton(
+                    icon: _getIconByViewState(_uiViewAsList()),
+                    onPressed: () {
+                      setState(() {
+                        _viewAsList = _uiViewAsList() == true ? false : true;
+                      });
+                    },
+                  )
+                ],
               )
-            ],
           ),
-          Row(
-            children: <Widget>[
-              new Center(
-                child: Text(snapshot.data.elementAt(index).Name + snapshot.data.elementAt(index).Surname),
-              )
-            ],
-          ),
-          Row(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(2.0),
-                child: IconButton(icon: new Icon(Icons.cloud_done), onPressed: () => {}),
-              )
-            ],
-          )
+          Divider(),
+          Expanded(
+              child: StreamBuilder(
+                stream: bloc.AllPeople,
+                builder: (context, AsyncSnapshot<List<PeopleModel>> snapshot) {
+                  if (snapshot.hasData) {
+                    return buildItems(snapshot);
+                  } else if (snapshot.hasError) {
+                    return Text(snapshot.error.toString());
+                  }
+                  return Center(child: new CircularProgressIndicator());
+                },
+              ))
         ],
       ),
     );
@@ -49,36 +84,41 @@ class PeopleUI extends State<PeopleListUI> {
 
   @override
   Widget build(BuildContext context) {
-    bloc.fetchAllPeople();
     return Scaffold(
       appBar: AppBar(
-        title: new Text("Count me in!"),
+        title: new Text(
+          "Kairos",
+          style: TextStyle(
+              fontStyle: FontStyle.italic, fontWeight: FontWeight.w800),
+          textAlign: TextAlign.center,
+        ),
       ),
-      body: StreamBuilder(
-        stream: bloc.AllPeople,
-        builder: (context, AsyncSnapshot<List<PeopleModel>> snapshot) {
-          if (snapshot.hasData) {
-            return buildItems(snapshot);
-          } else if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
-          }
-          return Center(child: new CircularProgressIndicator());
-        },
+      body: _bodyBuilder(context),
+      floatingActionButton: new FloatingActionButton(
+        onPressed: () => {},
+        child: Icon(Icons.add),
       ),
     );
     return null;
   }
 
-  /* TODO build as truly list */
   Widget buildItems(AsyncSnapshot<List<PeopleModel>> snapshot) {
-    return new GridView.builder(
-      itemCount: snapshot.data.length,
-      gridDelegate:
-          new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-      itemBuilder: (BuildContext context, int index) {
-        /* TODO Card layout */
-        return _buildItemAsCard(snapshot, index);
-      },
-    );
+    if (_viewAsList == true) {
+      return new ListView.builder(
+        itemBuilder: (BuildContext context, int index) {
+          return PeopleListItem(snapshot.data[index]);
+        },
+        itemCount: snapshot.data.length,
+      );
+    } else {
+      return new GridView.builder(
+        itemCount: snapshot.data.length,
+        gridDelegate:
+        new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+        itemBuilder: (BuildContext context, int index) {
+          return PeopleCard(snapshot.data[index]);
+        },
+      );
+    }
   }
 }
