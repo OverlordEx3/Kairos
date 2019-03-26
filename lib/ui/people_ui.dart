@@ -18,6 +18,10 @@ class PeopleUIState extends State<PeopleUI> {
   /* TODO Mocked value */
   /* TODO fetch value from storage */
   bool _viewAsList = true;
+  final Widget _notImplemented = new SnackBar(
+    content: Text("No implementado"),
+    duration: Duration(seconds: 5),
+  );
 
   @override
   initState() {
@@ -44,39 +48,20 @@ class PeopleUIState extends State<PeopleUI> {
     return new Container(
       margin: EdgeInsets.all(1.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          /* Bar selecting view as card/list */
-          Container(
-            alignment: Alignment.centerRight,
-            constraints: BoxConstraints(maxHeight: 30),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  IconButton(
-                    icon: _getIconByViewState(_uiViewAsList()),
-                    onPressed: () {
-                      setState(() {
-                        _viewAsList = _uiViewAsList() == true ? false : true;
-                      });
-                    },
-                  )
-                ],
-              )
-          ),
-          Divider(),
           Expanded(
               child: StreamBuilder(
-                stream: bloc.AllPeople,
-                builder: (context, AsyncSnapshot<List<PeopleModel>> snapshot) {
-                  if (snapshot.hasData) {
-                    return buildItems(snapshot);
-                  } else if (snapshot.hasError) {
-                    return Text(snapshot.error.toString());
-                  }
-                  return Center(child: new CircularProgressIndicator());
-                },
-              ))
+            stream: bloc.AllPeople,
+            builder: (context, AsyncSnapshot<List<PeopleModel>> snapshot) {
+              if (snapshot.hasData) {
+                return buildItems(snapshot);
+              } else if (snapshot.hasError) {
+                return Text(snapshot.error.toString());
+              }
+              return Center(child: new CircularProgressIndicator());
+            },
+          ))
         ],
       ),
     );
@@ -92,11 +77,72 @@ class PeopleUIState extends State<PeopleUI> {
               fontStyle: FontStyle.italic, fontWeight: FontWeight.w800),
           textAlign: TextAlign.center,
         ),
+        elevation: 10.0,
+        actions: <Widget>[
+          Builder(builder: (BuildContext context) {
+            return IconButton(
+                icon: Icon(Icons.search),
+                onPressed: (() =>
+                    {Scaffold.of(context).showSnackBar(_notImplemented)}));
+          }),
+          Builder(builder: (BuildContext context) {
+            return IconButton(
+                icon: Icon(Icons.filter_list),
+                onPressed: (() =>
+                    {Scaffold.of(context).showSnackBar(_notImplemented)}));
+          }),
+          Builder(builder: (BuildContext context) {
+            return IconButton(
+                icon: _getIconByViewState(_uiViewAsList()),
+                onPressed: (() =>
+                    {Scaffold.of(context).showSnackBar(_notImplemented)}));
+          })
+        ],
       ),
       body: _bodyBuilder(context),
       floatingActionButton: new FloatingActionButton(
-        onPressed: () => {},
+        onPressed: (() => {Scaffold.of(context).showSnackBar(_notImplemented)}),
         child: Icon(Icons.add),
+      ),
+      drawer: Drawer(
+        elevation: 5.0,
+        child: ListView(
+          children: <Widget>[
+            ListTile(
+              contentPadding: EdgeInsets.only(left: 20.0, right: 20.0),
+              leading: Icon(Icons.home),
+              title: Text("Inicio"),
+            ),
+            Divider(),
+            ListTile(
+              contentPadding: EdgeInsets.only(left: 20.0, right: 20.0),
+              leading: Icon(Icons.group),
+              title: Text("Listado"),
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.only(left: 20.0, right: 20.0),
+              leading: Icon(Icons.calendar_today),
+              title: Text("Asistencia"),
+              onTap: (() =>
+                  {Scaffold.of(context).showSnackBar(_notImplemented)}),
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.only(left: 20.0, right: 20.0),
+              leading: Icon(Icons.attach_money),
+              title: Text("Cobros"),
+              onTap: (() =>
+                  {Scaffold.of(context).showSnackBar(_notImplemented)}),
+            ),
+            Divider(),
+            ListTile(
+              contentPadding: EdgeInsets.only(left: 20.0, right: 20.0),
+              leading: Icon(Icons.help),
+              title: Text("Acerca de"),
+              onTap: (() =>
+                  {Scaffold.of(context).showSnackBar(_notImplemented)}),
+            ),
+          ],
+        ),
       ),
     );
     return null;
@@ -114,7 +160,7 @@ class PeopleUIState extends State<PeopleUI> {
       return new GridView.builder(
         itemCount: snapshot.data.length,
         gridDelegate:
-        new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemBuilder: (BuildContext context, int index) {
           return PeopleCard(snapshot.data[index]);
         },

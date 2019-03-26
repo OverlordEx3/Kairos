@@ -22,8 +22,7 @@ class MyApp extends StatelessWidget {
           // is not restarted.
           primarySwatch: Colors.blue,
         ),
-        home: Scaffold(
-          body: PeopleUI(),
-        ));
+        home:PeopleUI(),
+        );
   }
 }
