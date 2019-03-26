@@ -1,6 +1,6 @@
-# Kairos
+# kairos
 
-Kairos - Assistance tracker for scouts groups
+Kairos-Tracker for scout groups
 
 ## Getting Started
 
