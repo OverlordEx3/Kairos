@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../models/people_model.dart';
+import '../../models/people_model.dart';
 
 class PeopleListItem extends StatelessWidget {
   PeopleModel _people;
@@ -51,20 +51,17 @@ class PeopleListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return new Container(
-        decoration: BoxDecoration(
-            border: Border.all(color: Colors.black26, width: 0.7),
-            borderRadius: BorderRadius.all(Radius.circular(8.0))),
-        padding: EdgeInsets.all(2.0),
-        margin: EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            _imageHeader(context),
-            _dataCenter(context),
-            _buttons(context),
-          ],
-        ));
+    return Card(
+      elevation: 2.0,
+        child: ListTile(
+      leading: _imageHeader(context),
+      title: Text(
+        _people.Name + " " + _people.Surname,
+        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text("Hello from Kairos as ListItem!"),
+      trailing: Checkbox(value: false, onChanged: null),
+    )
+    );
   }
 }

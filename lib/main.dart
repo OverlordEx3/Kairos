@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'ui/people_ui.dart';
+import 'ui/routes/HomePage.dart';
+import 'ui/routes/ListPage.dart';
 
 void main() => runApp(MyApp());
 
@@ -22,7 +23,11 @@ class MyApp extends StatelessWidget {
           // is not restarted.
           primarySwatch: Colors.blue,
         ),
-        home:PeopleUI(),
+      initialRoute: '/',
+      routes: {
+          '/' : (context) => Home(),
+        '/List' : (context) => ListPage(),
+      },
         );
   }
 }

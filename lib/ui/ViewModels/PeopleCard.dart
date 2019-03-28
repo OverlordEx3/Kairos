@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import '../models/people_model.dart';
+import '../../models/people_model.dart';
 /* Models */
 
 
