@@ -3,7 +3,7 @@ import 'package:rxdart/rxdart.dart';
 import '../models/people_model.dart';
 import '../resources/people_repository.dart';
 
-final PeopleBloc bloc = PeopleBloc();
+final PeopleBloc peopleBloc = PeopleBloc();
 
 class PeopleBloc {
   final _repository = PeopleRepository();
@@ -18,7 +18,13 @@ class PeopleBloc {
     _peopleFetcher.sink.add(peopleModel);
   }
 
+  submitNewPeople(String name, String surname, DateTime birthdate, String shortbio, int ID ,{int uid, int hash}) async {
+
+  }
+
+
   dispose() {
+    _peopleFetcher.drain();
     _peopleFetcher.close();
   }
 

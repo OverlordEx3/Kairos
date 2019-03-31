@@ -10,7 +10,6 @@ class PeopleProvider {
     mockPeople.add(new PeopleModel(0, 0,"Exequiel", "Beker", new DateTime(1997, 11, 28), 41637989, ""));
     mockPeople.add(new PeopleModel(1, 0,"Brice", "Rivera", new DateTime.utc(1999, 11, 15), 45632178, ""));
     mockPeople.add(new PeopleModel(2, 0,"Jonatan", "Diaz", new DateTime.utc(1990, 05, 03), 35479568, ""));
-    mockPeople.add(new PeopleModel(2, 0,"Jonatan", "Diaz", new DateTime.utc(1990, 05, 03), 35479568, ""));
   }
 
   PeopleProvider();

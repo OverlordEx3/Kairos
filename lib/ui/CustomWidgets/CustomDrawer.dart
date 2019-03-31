@@ -11,7 +11,7 @@ class CustomDrawer extends Drawer {
             contentPadding: EdgeInsets.only(left: 20.0, right: 20.0),
             leading: Icon(Icons.home),
             title: Text("Inicio"),
-            onTap: () => Navigator.of(context).pushNamed('/'),
+            onTap: () => Navigator.of(context).pushReplacementNamed('/'),
           ),
           Container(
             margin: EdgeInsets.only(left: 20.0, right: 20.0),
@@ -21,7 +21,7 @@ class CustomDrawer extends Drawer {
             contentPadding: EdgeInsets.only(left: 20.0, right: 20.0),
             leading: Icon(Icons.group),
             title: Text("Listado"),
-            onTap: () => Navigator.of(context).pushNamed('/List'),
+            onTap: () => Navigator.of(context).pushReplacementNamed('/List'),
           ),
           ListTile(
             contentPadding: EdgeInsets.only(left: 20.0, right: 20.0),

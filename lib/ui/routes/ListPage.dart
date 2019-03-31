@@ -9,6 +9,10 @@ import '../ViewModels/PeopleListItem.dart';
 
 import '../CustomWidgets/CustomScaffold.dart';
 
+import 'NewPeople.dart';
+
+const ListPagePath = '/List';
+
 class ListPage extends StatefulWidget {
   @override
   _ListPageState createState() => _ListPageState();
@@ -24,12 +28,12 @@ class _ListPageState extends State<ListPage> {
   @override
   initState() {
     super.initState();
-    bloc.fetchAllPeople();
+    peopleBloc.fetchAllPeople();
   }
 
   @override
   dispose() {
-    bloc.dispose();
+    peopleBloc.dispose();
     super.dispose();
   }
 
@@ -50,7 +54,7 @@ class _ListPageState extends State<ListPage> {
         children: <Widget>[
           Expanded(
               child: StreamBuilder(
-            stream: bloc.AllPeople,
+            stream: peopleBloc.AllPeople,
             builder: (context, AsyncSnapshot<List<PeopleModel>> snapshot) {
               if (snapshot.hasData) {
                 return buildItems(snapshot);
@@ -71,7 +75,11 @@ class _ListPageState extends State<ListPage> {
       context: context,
       body: _bodyBuilder(context),
       fab: new FloatingActionButton(
-        onPressed: (() => {Scaffold.of(context).showSnackBar(_notImplemented)}),
+        onPressed: (() => {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return newPeople();
+              }))
+            }),
         child: Icon(Icons.add),
       ),
     );
