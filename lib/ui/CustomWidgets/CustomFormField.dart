@@ -4,8 +4,8 @@ class CustomFormField extends StatefulWidget {
   Widget sufixWidget;
   Widget prefixWidget;
   String title;
-  FormFieldValidator validator;
-  FormFieldSetter onSaved;
+  FormFieldValidator<String> validator;
+  FormFieldSetter<String> onSaved;
   bool enabled;
   TextInputType inputType;
   InputDecoration decoration;
@@ -24,6 +24,7 @@ class CustomFormField extends StatefulWidget {
 }
 
 class _CustomFormFieldState extends State<CustomFormField> {
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,10 +35,10 @@ class _CustomFormFieldState extends State<CustomFormField> {
       trailing: widget.sufixWidget,
       enabled: widget.enabled,
       subtitle: TextFormField(
-        decoration: widget.decoration,
-        keyboardType: widget.inputType,
-        onSaved: (value) {widget.onSaved(value);},
-        validator: (value) {widget.validator(value);},
+        decoration: widget.decoration?? InputDecoration(),
+        keyboardType: widget.inputType?? TextInputType.text,
+        onSaved: (value) {widget?.onSaved(value);},
+        validator: (value) {widget?.validator(value);},
       ),
     )
     );

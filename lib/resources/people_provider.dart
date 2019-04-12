@@ -1,25 +1,43 @@
 import 'dart:async';
+import '../models/PeopleModel.dart';
 
-import '../models/people_model.dart';
 
 class PeopleProvider {
-  /* XXX Mock */
-  List<PeopleModel> mockPeople = new List<PeopleModel>();
-
-  void initPeople() async {
-    mockPeople.add(new PeopleModel(0, 0,"Exequiel", "Beker", new DateTime(1997, 11, 28), 41637989, ""));
-    mockPeople.add(new PeopleModel(1, 0,"Brice", "Rivera", new DateTime.utc(1999, 11, 15), 45632178, ""));
-    mockPeople.add(new PeopleModel(2, 0,"Jonatan", "Diaz", new DateTime.utc(1990, 05, 03), 35479568, ""));
-  }
+  List<PeopleModel> People = new List<PeopleModel>();
 
   PeopleProvider();
 
-  List<PeopleModel> mockPeopleModel() {
-    initPeople();
-    return mockPeople;
-  }
+  Future<List<PeopleModel>> retrievePeople() async => People;
 
   Future<List<PeopleModel>> FetchPeople() async {
-    return Future.delayed(new Duration(seconds: 1), () => mockPeopleModel());
+    return Future.delayed(new Duration(seconds: 1), () => retrievePeople());
+  }
+
+  Future<bool> AddPeople (String name, String surname, int docID, String shortbio) async {
+    int lastID = People.isNotEmpty? People.first.UID : 0;
+    People.forEach((f) {
+      lastID = (f.UID > lastID)? f.UID : lastID;
+    });
+    lastID++;
+
+    People.add(new PeopleModel(lastID, -1, name, surname, docID, shortbio));
+  }
+
+  Future<void> DeletePeople(PeopleModel item) {
+    if(People.contains(item)) {
+      People.remove(item);
+    }
+
+    return Future.value();
+  }
+
+  Future<bool> updatePeople(PeopleModel item) async {
+    var index = People.indexWhere((e) => e.UID == item.UID);
+
+    if(index == -1) return false;
+    People.removeAt(index);
+    People.insert(index, item);
+
+    return true;
   }
 }

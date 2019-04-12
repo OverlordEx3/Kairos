@@ -6,12 +6,14 @@ import '../NotImplemented.dart' show notImplemented;
 class CustomScaffold extends Scaffold {
   CustomScaffold(
       {Key key,
-      FloatingActionButton fab,
+      Widget fab,
       Widget body,
-      @required BuildContext context})
+      @required BuildContext context,
+        FloatingActionButtonLocation location})
       : super(
             key: key,
             floatingActionButton: fab,
+            floatingActionButtonLocation: location,
             body: body,
             drawer: CustomDrawer(context: context),
             appBar: CustomAppbar(context: context, title: Text("Kairos")));

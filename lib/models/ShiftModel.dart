@@ -1,6 +1,7 @@
-import 'people_model.dart';
+import 'PeopleModel.dart';
 
 enum ShiftStatus {
+  SHIFT_ERROR,
   SHIFT_NEW,
   SHIFT_OPEN,
   SHIFT_CLOSED,
@@ -10,12 +11,12 @@ enum ShiftStatus {
 class ShiftModel {
   int _ID;
   DateTime _date;
-  int _status;
+  ShiftStatus _status;
 
   /* Getters */
   int get ID => _ID;
   DateTime get date => _date;
-  int get shiftStatus => _status;
+  ShiftStatus get shiftStatus => _status;
 
 /* Constructors*/
   ShiftModel.fromJSON(Map<String, dynamic> parsedJson) {
@@ -25,5 +26,11 @@ class ShiftModel {
     print("Shift model created OK!");
   }
 
-  ShiftModel.toJSON()
+  Map<String, dynamic> toJSON(){
+    return <String, dynamic> {
+      'id' : _ID,
+      'dt' : _date,
+      'st' : _status
+    };
+  }
 }

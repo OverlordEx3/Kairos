@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:fab_menu/fab_menu.dart';
 /* BLoCS */
-import '../../blocs/people_bloc.dart';
+import '../../blocs/PeopleBLoC.dart';
+import '../../blocs/ShiftBloc.dart';
+
 /* Models */
-import '../../models/people_model.dart';
+import '../../models/PeopleModel.dart';
+import '../../models/ShiftModel.dart';
 /* View models */
 import '../ViewModels/PeopleCard.dart';
 import '../ViewModels/PeopleListItem.dart';
 
 import '../CustomWidgets/CustomScaffold.dart';
 
-import 'NewPeople.dart';
+import 'PeopleCreateEditPage.dart';
 
 const ListPagePath = '/List';
 
@@ -19,6 +23,10 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
+  List<MenuData> menuData = new List<MenuData>();
+  bool shiftActive = false;
+
+
   bool _viewAsList = true;
   final Widget _notImplemented = new SnackBar(
     content: Text("No implementado"),
@@ -29,20 +37,25 @@ class _ListPageState extends State<ListPage> {
   initState() {
     super.initState();
     peopleBloc.fetchAllPeople();
+
+    menuData.add(MenuData(Icons.person, (context, menudata) {
+      showAddPerson(context);
+    }, labelText: "Nueva persona"));
+    menuData.add(MenuData(Icons.calendar_today, (context, menudata) {
+      /* TODO request new shift */
+      shiftBloc.requestNewShift();
+      if(shiftBloc.fetchShiftStatus() != ShiftStatus.SHIFT_ERROR) {
+        setState(() {
+          shiftActive = true;
+        });
+      }
+    }, labelText: "Nuevo turno"));
   }
 
   @override
   dispose() {
     peopleBloc.dispose();
     super.dispose();
-  }
-
-  bool _uiViewAsList() {
-    return _viewAsList;
-  }
-
-  Icon _getIconByViewState(bool viewState) {
-    return Icon(viewState == true ? Icons.view_list : Icons.view_agenda);
   }
 
   /* Widget body */
@@ -69,27 +82,68 @@ class _ListPageState extends State<ListPage> {
     );
   }
 
+  Future<bool> _showDismissibleConfirmation(
+      BuildContext context, DismissDirection direction) {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Confirmar"),
+            content: Text("¿Desea eliminar el item?"),
+            actions: <Widget>[
+              RaisedButton(
+                textTheme: ButtonTextTheme.primary,
+                child: Text("Eliminar"),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                onPressed: () => Navigator.of(context).pop(true),
+              ),
+              FlatButton(
+                child: Text("Cancelar"),
+                onPressed: () => Navigator.of(context).pop(false),
+              ),
+            ],
+          );
+        });
+  }
+
+  void showAddPerson(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      /* Creating a new person */
+      return new PeopleEditCreatePage(false);
+    }));
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
       context: context,
       body: _bodyBuilder(context),
-      fab: new FloatingActionButton(
-        onPressed: (() => {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return newPeople();
-              }))
-            }),
-        child: Icon(Icons.add),
+      fab: FabMenu(
+        menus: menuData,
       ),
+      location: fabMenuLocation,
     );
   }
+
 
   Widget buildItems(AsyncSnapshot<List<PeopleModel>> snapshot) {
     if (_viewAsList == true) {
       return new ListView.builder(
         itemBuilder: (BuildContext context, int index) {
-          return PeopleListItem(snapshot.data[index]);
+          return Dismissible(
+            direction: DismissDirection.horizontal,
+            key: Key(snapshot.data[index].hashCode.toString()),
+            child: PeopleListItem(snapshot.data[index]),
+            confirmDismiss: (direction) {
+              return _showDismissibleConfirmation(context, direction);
+            },
+            onDismissed: (direction) {
+              peopleBloc.deletePeople(snapshot.data[index]);
+            },
+          );
         },
         itemCount: snapshot.data.length,
       );

@@ -1,6 +1,6 @@
 import 'package:rxdart/rxdart.dart';
 
-import '../models/people_model.dart';
+import '../models/PeopleModel.dart';
 import '../resources/PeopleRepository.dart';
 
 final PeopleBloc peopleBloc = PeopleBloc();
@@ -29,6 +29,12 @@ class PeopleBloc {
 
   deletePeople(PeopleModel item) async {
     _repository.DeletePeople(item);
+    await _peopleFetcher.stream.drain();
+    _peopleFetcher.sink.add(await _repository.FetchAllPeople());
+  }
+
+  updatePeople(PeopleModel item) async {
+    _repository.updatePeople(item);
     await _peopleFetcher.stream.drain();
     _peopleFetcher.sink.add(await _repository.FetchAllPeople());
   }
