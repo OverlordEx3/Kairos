@@ -8,7 +8,6 @@ import '../../blocs/ShiftBloc.dart';
 import '../../models/PeopleModel.dart';
 import '../../models/ShiftModel.dart';
 /* View models */
-import '../ViewModels/PeopleCard.dart';
 import '../ViewModels/PeopleListItem.dart';
 
 import '../CustomWidgets/CustomScaffold.dart';
@@ -26,13 +25,6 @@ class _ListPageState extends State<ListPage> {
   List<MenuData> menuData = new List<MenuData>();
   bool shiftActive = false;
 
-
-  bool _viewAsList = true;
-  final Widget _notImplemented = new SnackBar(
-    content: Text("No implementado"),
-    duration: Duration(seconds: 5),
-  );
-
   @override
   initState() {
     super.initState();
@@ -43,12 +35,6 @@ class _ListPageState extends State<ListPage> {
     }, labelText: "Nueva persona"));
     menuData.add(MenuData(Icons.calendar_today, (context, menudata) {
       /* TODO request new shift */
-      shiftBloc.requestNewShift();
-      if(shiftBloc.fetchShiftStatus() != ShiftStatus.SHIFT_ERROR) {
-        setState(() {
-          shiftActive = true;
-        });
-      }
     }, labelText: "Nuevo turno"));
   }
 
@@ -67,8 +53,8 @@ class _ListPageState extends State<ListPage> {
         children: <Widget>[
           Expanded(
               child: StreamBuilder(
-            stream: peopleBloc.AllPeople,
-            builder: (context, AsyncSnapshot<List<PeopleModel>> snapshot) {
+            stream: peopleBloc.peopleStream,
+            builder: (context, AsyncSnapshot<List<People>> snapshot) {
               if (snapshot.hasData) {
                 return buildItems(snapshot);
               } else if (snapshot.hasError) {
@@ -95,7 +81,8 @@ class _ListPageState extends State<ListPage> {
               RaisedButton(
                 textTheme: ButtonTextTheme.primary,
                 child: Text("Eliminar"),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0))),
                 onPressed: () => Navigator.of(context).pop(true),
               ),
               FlatButton(
@@ -110,11 +97,9 @@ class _ListPageState extends State<ListPage> {
   void showAddPerson(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       /* Creating a new person */
-      return new PeopleEditCreatePage(false);
+      return new PeopleEditCreatePage(edit: false, people: null);
     }));
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -128,34 +113,23 @@ class _ListPageState extends State<ListPage> {
     );
   }
 
-
-  Widget buildItems(AsyncSnapshot<List<PeopleModel>> snapshot) {
-    if (_viewAsList == true) {
-      return new ListView.builder(
-        itemBuilder: (BuildContext context, int index) {
-          return Dismissible(
-            direction: DismissDirection.horizontal,
-            key: Key(snapshot.data[index].hashCode.toString()),
-            child: PeopleListItem(snapshot.data[index]),
-            confirmDismiss: (direction) {
-              return _showDismissibleConfirmation(context, direction);
-            },
-            onDismissed: (direction) {
-              peopleBloc.deletePeople(snapshot.data[index]);
-            },
-          );
-        },
-        itemCount: snapshot.data.length,
-      );
-    } else {
-      return new GridView.builder(
-        itemCount: snapshot.data.length,
-        gridDelegate:
-            new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-        itemBuilder: (BuildContext context, int index) {
-          return PeopleCard(snapshot.data[index]);
-        },
-      );
-    }
+  Widget buildItems(AsyncSnapshot<List<People>> snapshot) {
+    return new ListView.builder(
+      itemBuilder: (BuildContext context, int index) {
+        return Dismissible(
+          direction: DismissDirection.horizontal,
+          key: Key(snapshot.data[index].hashCode.toString()),
+          child:
+              PeopleListItem(shiftEnabled: false, people: snapshot.data[index]),
+          confirmDismiss: (direction) {
+            return _showDismissibleConfirmation(context, direction);
+          },
+          onDismissed: (direction) {
+            peopleBloc.deletePeople(snapshot.data[index]);
+          },
+        );
+      },
+      itemCount: snapshot.data.length,
+    );
   }
 }

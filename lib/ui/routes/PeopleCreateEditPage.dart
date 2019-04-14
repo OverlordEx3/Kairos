@@ -3,14 +3,11 @@ import '../../blocs/PeopleBLoC.dart';
 import '../../models/PeopleModel.dart';
 
 class PeopleEditCreatePage extends StatefulWidget {
-  bool edit;
-  PeopleModel people;
+  final bool edit;
+  final People people;
 
-  PeopleEditCreatePage(bool edit, {PeopleModel people})
-      : assert((edit == true && people != null) || edit == false) {
-    this.edit = edit;
-    this.people = people;
-  }
+  PeopleEditCreatePage({this.edit, this.people})
+      : assert((edit == true && people != null) || edit == false);
 
   @override
   _PeopleEditCreatePageState createState() => _PeopleEditCreatePageState();
@@ -23,7 +20,6 @@ class _PeopleEditCreatePageState extends State<PeopleEditCreatePage> {
       borderRadius: BorderRadius.all(Radius.circular(5.0)));
   TextEditingController _nameTextController;
   TextEditingController _surnameTextController;
-  TextEditingController _idController;
   TextEditingController _miscController;
 
   String _buttonLabel = "";
@@ -36,13 +32,11 @@ class _PeopleEditCreatePageState extends State<PeopleEditCreatePage> {
     super.initState();
 
     _nameTextController = new TextEditingController(
-        text: widget.edit == true ? widget.people.Name : "");
+        text: widget.edit == true ? widget.people.name : "");
     _surnameTextController = new TextEditingController(
-        text: widget.edit == true ? widget.people.Surname : "");
-    _idController = new TextEditingController(
-        text: widget.edit == true ? widget.people.ID.toString() : "");
+        text: widget.edit == true ? widget.people.surname : "");
     _miscController = new TextEditingController(
-        text: widget.edit == true ? widget.people.ShortBio : "");
+        text: widget.edit == true ? widget.people.shortBio : "");
 
     _buttonLabel = widget.edit ? "Editar" : "Crear";
     _title = widget.edit ? "Editar persona" : "Nueva persona";
@@ -67,20 +61,6 @@ class _PeopleEditCreatePageState extends State<PeopleEditCreatePage> {
           InputDecoration(labelText: "Apellido", border: _defaultBorder),
       validator: (name) {
         if (name.isEmpty) return 'El campo no puede estar vacío';
-      },
-    );
-  }
-
-  Widget _idField(BuildContext context) {
-    return TextFormField(
-      controller: _idController,
-      keyboardType: TextInputType.number,
-      maxLength: 15,
-      decoration:
-          InputDecoration(labelText: "Documento", border: _defaultBorder),
-      validator: (id) {
-        if (id.isEmpty) return "El campo no puede estar vacío";
-        if (int.tryParse(id) == null) return 'Error en el campo';
       },
     );
   }
@@ -135,18 +115,14 @@ class _PeopleEditCreatePageState extends State<PeopleEditCreatePage> {
   bool validateAndSave() {
     bool isValid = formKey.currentState.validate();
     if (isValid != true) return false;
-
     /* Check operation*/
     if (widget.edit == true) {
       /* Request editing */
-      peopleBloc.updatePeople(widget.people);
+      peopleBloc.updatePeople(People(uniqueID: widget.people.uid, name: _nameTextController.text, surname: _surnameTextController.text, shortBio: _miscController.text, sectionID: -1));
     } else {
       /* Save new one */
-      peopleBloc.submitNewPeople(
-          _nameTextController.text,
-          _surnameTextController.text,
-          _miscController.text,
-          int.tryParse(_idController.text) ?? -1);
+      peopleBloc.submitNewPeople(_nameTextController.text,
+          _surnameTextController.text, _miscController.text, -1); /*  TODO actual section support */
     }
 
     return true;
@@ -169,7 +145,6 @@ class _PeopleEditCreatePageState extends State<PeopleEditCreatePage> {
           children: <Widget>[
             _nameField(context),
             _surnameField(context),
-            _idField(context),
             _shortBioField(context),
             _buttonCTA(context),
           ],

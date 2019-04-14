@@ -1,60 +1,47 @@
-import 'package:flutter/material.dart';
-
-class PeopleModel {
-  int _uid;
-  int _sectionID; //Reference to scout group session.
-  int _hash;
+class _PeopleModel {
+  int uid;
+  int sectionID; //Reference to scout group session.
+  int hash;
 
   /* people basic data */
-  String _name;
-  String _surname;
-  int _docId; //Personal ID. Passport, NID, etc.
+  String name;
+  String surname;
 
   /*  Extended */
-  String _shortBio;
+  String shortBio;
   /* TODO Add image support */
 
-  PeopleModel(int uid, int section, String name, String surname, int docID, String shortBio) {
-    this._uid = uid;
-    this._sectionID = section;
-    this._name = name;
-    this._surname = surname;
-    this._docId = docID;
-    this._shortBio = shortBio;
+  _PeopleModel(
+      {this.uid, this.name, this.surname, this.shortBio, this.sectionID});
+
+  factory _PeopleModel.fromJson(Map<String, dynamic> params) {
+    return new _PeopleModel(
+        name: params['name'],
+        surname: params['surname'],
+        shortBio: params['shortbio'],
+        sectionID: params['section'],
+        uid: params['uid']);
   }
 
-  /* Getters */
-  int get UID => _uid;
-  int get SectionID => _sectionID;
-  int get hashCode => _hash;
-  String get Name => _name;
-  String get Surname => _surname;
-  int get ID => _docId;
-  String get ShortBio => _shortBio;
-
-  /* setters */
-  void set Name(String name) {
-    if(name != _name) {
-      _name = name;
-    }
+  Map<String, dynamic> toMap() {
+    return {
+      'uid': uid,
+      'section': sectionID,
+      'name': name,
+      'surname': surname,
+      'short': shortBio,
+    };
   }
+}
 
-  void set Surname(String surname) {
-    if(surname != _surname) {
-      _surname = surname;
-    }
-  }
+/* Aliasing */
 
-  void set ID(int id)
-  {
-    if(id != _docId) {
-      _docId = id;
-    }
-  }
-
-  void set ShortBio(String bio) {
-    if(bio != _shortBio) {
-      _shortBio = bio;
-    }
-  }
+class People extends _PeopleModel {
+  People({int uniqueID, String name, String surname, String shortBio, int sectionID})
+      : super(
+            uid: uniqueID,
+            name: name,
+            surname: surname,
+            shortBio: shortBio,
+            sectionID: sectionID);
 }

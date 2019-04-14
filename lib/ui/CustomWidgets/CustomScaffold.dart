@@ -9,12 +9,14 @@ class CustomScaffold extends Scaffold {
       Widget fab,
       Widget body,
       @required BuildContext context,
-        FloatingActionButtonLocation location})
+        FloatingActionButtonLocation location,
+      Widget bottomNavBar})
       : super(
             key: key,
             floatingActionButton: fab,
             floatingActionButtonLocation: location,
             body: body,
             drawer: CustomDrawer(context: context),
-            appBar: CustomAppbar(context: context, title: Text("Kairos")));
+            appBar: CustomAppbar(context: context, title: Text("Kairos")),
+            bottomNavigationBar: bottomNavBar);
 }
