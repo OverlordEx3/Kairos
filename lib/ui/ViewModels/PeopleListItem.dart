@@ -28,7 +28,7 @@ class _PeopleListItemState extends State<PeopleListItem> {
     return Card(
       elevation: 2.0,
         child: ListTile(
-          onLongPress: () => widget.onLongPress(),
+          onLongPress: widget.onLongPress,
           leading: _imageHeader(context),
           title: Text(
             widget.people.name + " " + widget.people.surname,

@@ -101,6 +101,13 @@ class _ListPageState extends State<ListPage> {
     }));
   }
 
+  void showEditPerson(BuildContext context, People person) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      /* Creating a new person */
+      return new PeopleEditCreatePage(edit: true, people: person);
+    }));
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -117,10 +124,12 @@ class _ListPageState extends State<ListPage> {
     return new ListView.builder(
       itemBuilder: (BuildContext context, int index) {
         return Dismissible(
-          direction: DismissDirection.horizontal,
+          direction: DismissDirection.endToStart,
           key: Key(snapshot.data[index].hashCode.toString()),
           child:
-              PeopleListItem(shiftEnabled: false, people: snapshot.data[index]),
+              PeopleListItem(shiftEnabled: false, people: snapshot.data[index], onLongPress: () {
+                showEditPerson(context, snapshot.data[index]);
+              },),
           confirmDismiss: (direction) {
             return _showDismissibleConfirmation(context, direction);
           },
