@@ -7,7 +7,7 @@ class PeopleEditCreatePage extends StatefulWidget {
   final People people;
 
   PeopleEditCreatePage({this.edit, this.people})
-      : assert((edit == true && people != null) || edit == false);
+      : assert((edit == true && people != null) || edit == false, "Null people reference editing");
 
   @override
   _PeopleEditCreatePageState createState() => _PeopleEditCreatePageState();

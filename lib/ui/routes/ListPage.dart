@@ -127,9 +127,7 @@ class _ListPageState extends State<ListPage> {
           direction: DismissDirection.endToStart,
           key: Key(snapshot.data[index].hashCode.toString()),
           child:
-              PeopleListItem(shiftEnabled: false, people: snapshot.data[index], onLongPress: () {
-                showEditPerson(context, snapshot.data[index]);
-              },),
+              PeopleListItem(shiftEnabled: false, people: snapshot.data[index], onLongPress: showEditPerson),
           confirmDismiss: (direction) {
             return _showDismissibleConfirmation(context, direction);
           },

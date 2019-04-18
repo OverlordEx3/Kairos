@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../models/PeopleModel.dart';
 
+typedef ItemGestureCallback(BuildContext widgetContext, People editingPeople);
+
 class PeopleListItem extends StatefulWidget {
 	final People people;
 	final bool shiftEnabled;
-	final VoidCallback onLongPress;
+	final ItemGestureCallback onLongPress;
 
 	PeopleListItem({this.people, this.shiftEnabled, this.onLongPress});
 
@@ -27,7 +29,9 @@ class _PeopleListItemState extends State<PeopleListItem> {
 		return Card(
 				elevation: 2.0,
 				child: ListTile(
-					onLongPress: widget.onLongPress,
+					onLongPress: () {
+						widget?.onLongPress(context, widget.people);
+					},
 					leading: _imageHeader(context),
 					title: Text(
 						widget.people.name + " " + widget.people.surname,

@@ -13,7 +13,7 @@ class PeopleBloc {
   final _repository = PeopleRepository();
 
   /* Stream Controller, used to handle in/out data to the repository */
-  final _peopleFetchController = new PublishSubject<List<People>>();
+  final _peopleFetchController = new ReplaySubject<List<People>>();
   /* Getter method to retrieve all people from stream. Stream list
    * to know when some child of it changed. Or received.
    * It's, primarily, a Subscriber*/
