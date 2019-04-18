@@ -14,10 +14,10 @@ class PeopleBloc {
 
   /* Stream Controller, used to handle in/out data to the repository */
   final _peopleFetchController = new PublishSubject<List<People>>();
-  /* Getter method to retrieve all people from stream. Observable list
+  /* Getter method to retrieve all people from stream. Stream list
    * to know when some child of it changed. Or received.
    * It's, primarily, a Subscriber*/
-  Observable<List<People>> get peopleStream => _peopleFetchController.stream;
+  Stream<List<People>> get peopleStream => _peopleFetchController.stream;
   Sink<List<People>> get _inPeopleSink => _peopleFetchController.sink;
 
   final _peopleAddController = new PublishSubject<People>();
