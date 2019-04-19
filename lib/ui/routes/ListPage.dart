@@ -28,6 +28,7 @@ class _ListPageState extends State<ListPage> {
   @override
   initState() {
     super.initState();
+    print("Initing!");
     peopleBloc.fetchAllPeople();
 
     menuData.add(MenuData(Icons.person, (context, menudata) {
@@ -40,6 +41,7 @@ class _ListPageState extends State<ListPage> {
 
   @override
   dispose() {
+    print("Disposing!");
     peopleBloc.dispose();
     super.dispose();
   }
@@ -55,12 +57,30 @@ class _ListPageState extends State<ListPage> {
               child: StreamBuilder(
             stream: peopleBloc.peopleStream,
             builder: (context, AsyncSnapshot<List<People>> snapshot) {
-              if (snapshot.hasData) {
-                return buildItems(snapshot);
-              } else if (snapshot.hasError) {
-                return Text(snapshot.error.toString());
+              switch (snapshot.connectionState) {
+                case ConnectionState.active:
+                case ConnectionState.done:
+                  if (snapshot.hasError) {
+                    print(
+                        "Error occurred at streambuilder: ${snapshot.error.toString()}");
+                    print(
+                        "Error type: ${snapshot.error.runtimeType.toString()}");
+                    return Text("An error occurred. Please try again",
+                        softWrap: true);
+                  }
+
+                  if (snapshot.hasData) {
+                    print("Building ${snapshot.data.length} items.");
+                    return buildItems(snapshot);
+                  }
+                  break;
+
+                default:
+                  print("No connection with stream. Awaiting...");
+                  print("Connection state: ${snapshot.connectionState.toString()}");
+                  return Center(child: new CircularProgressIndicator());
+                  break;
               }
-              return Center(child: new CircularProgressIndicator());
             },
           ))
         ],
@@ -126,14 +146,14 @@ class _ListPageState extends State<ListPage> {
         return Dismissible(
           direction: DismissDirection.endToStart,
           key: Key(snapshot.data[index].hashCode.toString()),
-          child:
-              PeopleListItem(shiftEnabled: false, people: snapshot.data[index], onLongPress: showEditPerson),
-          confirmDismiss: (direction) {
-            return _showDismissibleConfirmation(context, direction);
-          },
-          onDismissed: (direction) {
-            peopleBloc.deletePeople(snapshot.data[index]);
-          },
+          child: PeopleListItem(
+              shiftEnabled: false,
+              people: snapshot.data[index],
+              onLongPress: showEditPerson),
+          confirmDismiss: (direction) =>
+              _showDismissibleConfirmation(context, direction),
+          onDismissed: (direction) =>
+              peopleBloc.deletePeople(snapshot.data[index]),
         );
       },
       itemCount: snapshot.data.length,
