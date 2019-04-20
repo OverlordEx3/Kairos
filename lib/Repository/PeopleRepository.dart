@@ -53,7 +53,7 @@ class PeopleRepository implements IRepository<People> {
         sectionID: params['section']);
     cache.add(person.hashCode, person);
 
-    provider.update(person, whereArgs: whereArgs);
+    await provider.update(person, whereArgs: whereArgs);
     return null;
   }
 }

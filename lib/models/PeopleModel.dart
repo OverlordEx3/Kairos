@@ -23,6 +23,10 @@ class _PeopleModel {
         uid: params['uid']);
   }
 
+  factory _PeopleModel.fromMap(Map<String, dynamic> params) {
+    return _PeopleModel.fromJson(params);
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,

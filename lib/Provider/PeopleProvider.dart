@@ -3,20 +3,20 @@ import 'package:count_me_in/Provider/IProvider.dart' show IProvider, IProviderLo
 import '../models/PeopleModel.dart' show People;
 
 /* Get people */
-import '../resources/masterDb.dart' show masterDatabase;
+import '../resources/database/PeopleDB.dart' show peopleDatabase;
 
 class PeopleLocalProvider implements IProvider<People> {
   IProviderLocation get location => IProviderLocation.local;
 
   @override
   Future<People> add(Map<String, dynamic> params) async{
-    final item = masterDatabase.addPeopleToDB(params['name'], params['surname'], params['shortBio'], params['section']);
+    final item = peopleDatabase.addPerson(params['name'], params['surname'], params['shortBio'], params['section']);
     return await item;
   }
 
   @override
   Future<bool> delete(int key) async {
-    final result = await masterDatabase.deletePersonFromDB(key);
+    final result = await peopleDatabase.deletePerson(key);
     if(result > 0) return true;
     return false;
   }
@@ -41,12 +41,12 @@ class PeopleLocalProvider implements IProvider<People> {
 
   @override
   Future<List<People>> retrieveAll({Map<String, dynamic> whereArgs}) async {
-    return masterDatabase.getAllPeopleFromDB();
+    return peopleDatabase.getAllPeople();
   }
 
   @override
   Future<int> update(People item, {Map<String, dynamic> whereArgs}) async{
-    return await masterDatabase.updatePeopleToDB(item);
+    return await peopleDatabase.updatePerson(item);
   }
 }
 

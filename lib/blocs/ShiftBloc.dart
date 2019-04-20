@@ -1,27 +1,23 @@
 import 'package:rxdart/rxdart.dart';
 
 import '../models/ShiftModel.dart';
+import '../Provider/ShiftProvider.dart' show ShiftLocalProvider;
 import 'package:count_me_in/Repository/ShiftRepository.dart';
 
 final ShiftBloc shiftBloc = ShiftBloc();
 
 class ShiftBloc {
-  final _shiftRepository = ShiftRepository();
+  /* Keep track of the last shift. If one is active */
+  bool _shiftActive = false;
 
-  final _shiftFetch = new PublishSubject<ShiftStatus>();
+  final _shiftRepository = ShiftRepository(provider: ShiftLocalProvider());
 
-  /* Fetch possible changes in status */
-  Observable<ShiftStatus> get fetchShift => _shiftFetch.stream;
+  final _shiftFetchController = new PublishSubject<Shift>();
+  Sink<Shift> get _shiftAdd => _shiftFetchController.sink;
+  Observable<Shift> get currentShift => _shiftFetchController.stream;
 
-  ShiftStatus fetchShiftStatus() {
-    return _shiftRepository.shiftStatus();
-  }
 
-  requestNewShift() async {
-    final result = await _shiftRepository.requestNewShift();
-    if(result != ShiftStatus.SHIFT_ERROR) {
-      await _shiftFetch.stream.drain();
-      _shiftFetch.sink.add(_shiftRepository.shiftStatus());
-    }
-  }
+
+
+
 }

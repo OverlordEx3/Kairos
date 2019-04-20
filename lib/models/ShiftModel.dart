@@ -1,4 +1,3 @@
-import 'PeopleModel.dart';
 
 enum ShiftStatus {
   SHIFT_ERROR,
@@ -8,29 +7,34 @@ enum ShiftStatus {
   SHIFT_EDITED
 }
 
-class ShiftModel {
-  int _ID;
-  DateTime _date;
-  ShiftStatus _status;
+class _ShiftModel {
+  int uid;
+  int date;
+  ShiftStatus status;
 
-  /* Getters */
-  int get ID => _ID;
-  DateTime get date => _date;
-  ShiftStatus get shiftStatus => _status;
+  _ShiftModel({this.uid, this.date, this.status});
 
 /* Constructors*/
-  ShiftModel.fromJSON(Map<String, dynamic> parsedJson) {
-    _ID = parsedJson['id'];
-    _date = parsedJson['dt'];
-    _status = parsedJson['st'];
-    print("Shift model created OK!");
+  factory _ShiftModel.fromJSON(Map<String, dynamic> parsedJson) {
+    return _ShiftModel(
+      uid: parsedJson['id'],
+      date: parsedJson['dt'],
+      status: parsedJson['st']
+    );
   }
 
-  Map<String, dynamic> toJSON(){
+  Map<String, dynamic> toMap(){
     return <String, dynamic> {
-      'id' : _ID,
-      'dt' : _date,
-      'st' : _status
+      'id' : this.uid,
+      'dt' : this.date,
+      'st' : this.status
     };
   }
+}
+
+/* Aliasing */
+class Shift extends _ShiftModel {
+  Shift({int uid, int date, ShiftStatus status}) : super(uid: uid, date: date, status: status);
+  factory Shift.fromJSON(Map<String, dynamic> json) => _ShiftModel.fromJSON(json);
+  factory Shift.fromMap(Map<String, dynamic> params) => Shift.fromJSON(params);
 }

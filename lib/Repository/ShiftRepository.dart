@@ -1,20 +1,37 @@
-import 'package:count_me_in/Provider/ShiftProvider.dart';
 import '../models/ShiftModel.dart';
+import 'IRepository.dart' show IRepository;
+import '../Provider/IProvider.dart' show IProvider;
 
-class ShiftRepository {
-  final _shiftProvider = new ShiftProvider();
-  ShiftModel _shift;
+class ShiftRepository implements IRepository<Shift> {
+  final IProvider<Shift> provider;
 
-  Future<ShiftStatus> requestNewShift() async {
-    _shift = await _shiftProvider.requestNewShift();
-    return _shift.shiftStatus;
+  ShiftRepository({this.provider});
+
+  @override
+  Future<Shift> add({Map<String, dynamic> params}) {
+    return provider.add(params);
   }
 
-  ShiftStatus shiftStatus() {
-    if(_shift == Null) {
-      return ShiftStatus.SHIFT_ERROR;
-    }
+  @override
+  Future<bool> delete(int key, Shift item) {
+    return provider.delete(key);
+  }
 
-    return _shift.shiftStatus;
+  @override
+  Future<Shift> get({Map<String, dynamic> whereArgs}) {
+    return provider.retrieve(whereArgs: whereArgs);
+  }
+
+  @override
+  Future<List<Shift>> getAll({Map<String, dynamic> whereArgs}) {
+    return provider.retrieveAll();
+  }
+
+  @override
+  Future<Shift> update(int key, {Map<String, dynamic> params, Map<String, dynamic> whereArgs}) async {
+    // TODO: implement update
+    final shift = Shift(uid: params['uid'], status: params['status'], date: params['date']);
+    await provider.update(shift);
+    return null;
   }
 }
