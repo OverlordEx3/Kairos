@@ -30,7 +30,7 @@ class PeopleListItem extends StatelessWidget {
 						this.people.name + " " + this.people.surname,
 						style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
 					),
-					subtitle: Text(this.people.shortBio),
+					subtitle: Text(this.people.shortBio?? ""),
 					trailing: this.shiftEnabled ? Checkbox(value: false, onChanged: null) : null,
 				)
 		);

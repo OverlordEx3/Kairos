@@ -1,4 +1,4 @@
-import 'ShiftProvider.dart';
+import 'package:count_me_in/Provider/ShiftProvider.dart';
 import '../models/ShiftModel.dart';
 
 class ShiftRepository {

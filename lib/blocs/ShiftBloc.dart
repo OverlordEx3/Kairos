@@ -1,7 +1,7 @@
 import 'package:rxdart/rxdart.dart';
 
 import '../models/ShiftModel.dart';
-import '../resources/ShiftRepository.dart';
+import 'package:count_me_in/Repository/ShiftRepository.dart';
 
 final ShiftBloc shiftBloc = ShiftBloc();
 

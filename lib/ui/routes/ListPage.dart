@@ -29,7 +29,7 @@ class _ListPageState extends State<ListPage> {
   initState() {
     super.initState();
     print("Initing!");
-    peopleBloc.fetchAllPeople();
+    peopleBloc.retrieveAll();
 
     menuData.add(MenuData(Icons.person, (context, menudata) {
       showAddPerson(context);
@@ -153,7 +153,7 @@ class _ListPageState extends State<ListPage> {
           confirmDismiss: (direction) =>
               _showDismissibleConfirmation(context, direction),
           onDismissed: (direction) =>
-              peopleBloc.deletePeople(snapshot.data[index]),
+              peopleBloc.delete(snapshot.data[index]),
         );
       },
       itemCount: snapshot.data.length,

@@ -49,16 +49,14 @@ class MasterDB {
     return person;
   }
 
-  Future<bool> updatePeopleToDB(People person) async {
+  Future<int> updatePeopleToDB(People person) async {
     final db = await database;
-    final count = await db.update('People', person.toMap(), where: 'uid = ?', whereArgs: [person.uid]);
-    if(count == 0) return false;
-    return true;
+    return await db.update('People', person.toMap(), where: 'uid = ?', whereArgs: [person.uid]);
   }
 
-  Future<void> deletePersonFromDB(People person) async {
+  Future<int> deletePersonFromDB(int key) async {
     final db = await database;
-    await db.delete('People', where: 'uid = ?', whereArgs: [person.uid]);
+    return await db.delete('People', where: 'uid = ?', whereArgs: [key]);
   }
 
   Future<List<People>> getAllPeopleFromDB() async {
