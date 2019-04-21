@@ -8,7 +8,7 @@ class AttendanceProvider implements IProvider<Attendance> {
 
   @override
   Future<Attendance> add(Map<String, dynamic> params) {
-    return attendanceDB.addAttendanceItem(params['attendant'], params['personid'], params['shiftID'], 0, params['section'], params['group']);
+    return attendanceDB.addAttendanceItem(params['attendant'], params['personid'], params['shiftID']);
   }
 
   @override

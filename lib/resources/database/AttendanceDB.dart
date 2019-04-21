@@ -1,5 +1,6 @@
 import 'dart:core';
 import '../../models/AttendanceModel.dart' show Attendance;
+import '../../models/PeopleModel.dart' show People;
 import 'masterDb.dart' show masterDatabase;
 import 'PeopleDB.dart' show peopleDatabase;
 import 'ShiftDB.dart' show shiftDB;
@@ -30,9 +31,11 @@ class AttendanceDB {
 		});
 	}
 
-	Future<Attendance> addAttendanceItem(bool attendance, int peopleID, int shiftID, int id, int sectionID, int groupID) async {
+	Future<Attendance> addAttendanceItem(bool attendance, int peopleID, int shiftID) async {
 		final db = await masterDatabase.database;
-		final attendanceItem = Attendance(attendance, peopleID, shiftID, await masterDatabase.getNextIDFromDB(tableName, primaryKey), sectionID, groupID);
+		/* Calculate foreign keys from people ID */
+		final people = await peopleDatabase.getPeopleById(peopleID);
+		final attendanceItem = Attendance(attendance, peopleID, shiftID, await masterDatabase.getNextIDFromDB(tableName, primaryKey), people?.sectionID, people?.groupID);
 		await db.insert(this.tableName, attendanceItem.toMap());
 
 		return attendanceItem;

@@ -2,7 +2,6 @@ class _PeopleModel {
   int uid;
   int sectionID; //Reference to scout group section.
   int groupID; //Reference to scout group
-  int hash;
 
   /* people basic data */
   String name;

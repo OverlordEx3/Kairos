@@ -21,8 +21,7 @@ class PeopleDB {
       "section":
           "REFERENCES ${sectionDB.tableName}(${sectionDB.primaryKey}) ON UPDATE CASCADE ON DELETE SET NULL",
       "group":
-          "REFERENCES ${groupDB.tableName}(${groupDB.primaryKey}) ON UPDATE CASCADE ON DELETE CASCADE",
-      "hash": "INTEGER"
+          "REFERENCES ${groupDB.tableName}(${groupDB.primaryKey}) ON UPDATE CASCADE ON DELETE CASCADE"
     };
     /* Check if table exists */
     masterDatabase.tableExists(tableName).then((result) {
@@ -61,6 +60,25 @@ class PeopleDB {
     final db = await masterDatabase.database;
     return await db
         .delete(tableName, where: '$primaryKey = ?', whereArgs: [key]);
+  }
+
+  Future<People> getPeopleById(int id) async {
+    final db = await masterDatabase.database;
+    final dbResult = await db.query(tableName, where: '${this.primaryKey} = ?', whereArgs: [id]);
+
+    if(dbResult.length == 0) {
+      return null;
+    }
+
+    return People(
+      uniqueID: dbResult.first['uid'],
+      name: dbResult.first['name'],
+      surname: dbResult.first['surname'],
+      shortBio: dbResult.first['short'],
+      sectionID: dbResult.first['section'],
+      groupID: dbResult.first['groupid'],
+      imgURI: dbResult.first['imguri'],
+    );
   }
 
   Future<List<People>> getAllPeople() async {
