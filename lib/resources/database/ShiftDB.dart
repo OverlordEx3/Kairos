@@ -7,11 +7,12 @@ final ShiftDB shiftDB = ShiftDB();
 
 class ShiftDB {
 	final String tableName = "Shift";
+	final String primaryKey = 'uid';
 
 	ShiftDB() {
 		final Map<String, String> tableParams =
 		{
-			"uid" : "INTEGER PRIMARY KEY",
+			primaryKey : "INTEGER PRIMARY KEY",
 			"date" : "INTEGER",
 			"status" : "INTEGER"
 		};
@@ -25,7 +26,7 @@ class ShiftDB {
 
 	Future<Shift> addShift(DateTime date, ShiftStatus status) async {
 		final db = await masterDatabase.database;
-		final shift = Shift(uid: await getNextIDFromDB(), status: status, date: date.millisecondsSinceEpoch);
+		final shift = Shift(uid: await masterDatabase.getNextIDFromDB(tableName, primaryKey), status: status, date: date.millisecondsSinceEpoch);
 		await db.insert(tableName, shift.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
 
 		return shift;
@@ -52,16 +53,5 @@ class ShiftDB {
 				status: dbResult[i]['status']
 			);
 		});
-	}
-
-	Future<int> getNextIDFromDB() async {
-		final db = await masterDatabase.database;
-		var dbQuery = await db.rawQuery('SELECT COALESCE(MAX(uid)+1, 0) FROM ?', [tableName]);
-		if(dbQuery.length > 0) {
-			var ret = Sqflite.firstIntValue(dbQuery);
-			return ret;
-		} else {
-			return 0;
-		}
 	}
 }

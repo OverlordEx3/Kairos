@@ -1,9 +1,14 @@
 
 enum ShiftStatus {
+	///Shift has an error
   SHIFT_ERROR,
+	/// Shift is recently created and empty
   SHIFT_NEW,
+	/// Shift is filled with data and ready to be closed (and saved)
   SHIFT_OPEN,
+	/// Shift is closed and read-only.
   SHIFT_CLOSED,
+	/// Shift was re-opened and filled with different data
   SHIFT_EDITED
 }
 

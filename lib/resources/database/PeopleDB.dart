@@ -2,20 +2,24 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:core';
 import '../../models/PeopleModel.dart';
 import 'masterDb.dart' show masterDatabase;
+import 'SectionDB.dart' show sectionDB;
+import 'GroupDB.dart' show groupDB;
 
 final PeopleDB peopleDatabase = PeopleDB();
 
 class PeopleDB {
 	final String tableName = "People";
+	final String primaryKey = 'uid';
 
 	PeopleDB() {
 		final Map<String, String> tableParams =
 		{
-			"uid" : "INTEGER PRIMARY KEY",
+			primaryKey : "INTEGER PRIMARY KEY",
 			"name" : "TEXT",
 			"surname" : "TEXT",
 			"short" : "TEXT",
-			"section" : "INTEGER",
+			"section" : "REFERENCES ${sectionDB.tableName}(${sectionDB.primaryKey}) ON UPDATE CASCADE ON DELETE SET NULL",
+			"group" : "REFERENCES ${groupDB.tableName}(${groupDB.primaryKey}) ON UPDATE CASCADE ON DELETE CASCADE",
 			"hash" : "INTEGER"
 		};
 		/* Check if table exists */
@@ -29,7 +33,7 @@ class PeopleDB {
 	/*  People operation */
 	Future<People> addPerson(String name, String surname, String shortBio, int section) async {
 		final db = await masterDatabase.database;
-		People person = People(uniqueID: await _getNextIDFromDB(), name: name, surname: surname, shortBio: shortBio, sectionID: section);
+		People person = People(uniqueID: await masterDatabase.getNextIDFromDB(tableName, primaryKey), name: name, surname: surname, shortBio: shortBio, sectionID: section);
 		await db.insert(tableName, person.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
 
 		return person;
@@ -37,12 +41,12 @@ class PeopleDB {
 
 	Future<int> updatePerson(People person) async {
 		final db = await masterDatabase.database;
-		return await db.update(tableName, person.toMap(), where: 'uid = ?', whereArgs: [person.uid]);
+		return await db.update(tableName, person.toMap(), where: '$primaryKey = ?', whereArgs: [person.uid]);
 	}
 
 	Future<int> deletePerson(int key) async {
 		final db = await masterDatabase.database;
-		return await db.delete(tableName, where: 'uid = ?', whereArgs: [key]);
+		return await db.delete(tableName, where: '$primaryKey = ?', whereArgs: [key]);
 	}
 
 	Future<List<People>> getAllPeople() async {
@@ -58,16 +62,5 @@ class PeopleDB {
 					sectionID: dbResult[i]['section']
 			);
 		});
-	}
-
-	Future<int> _getNextIDFromDB() async {
-		final db = await masterDatabase.database;
-		var dbQuery = await db.rawQuery('SELECT COALESCE(MAX(uid)+1, 0) FROM ?', [tableName]);
-		if(dbQuery.length > 0) {
-			var ret = Sqflite.firstIntValue(dbQuery);
-			return ret;
-		} else {
-			return 0;
-		}
 	}
 }

@@ -32,7 +32,9 @@ class MasterDB {
   initDB() async {
     Directory appDocumentDirectory = await getApplicationDocumentsDirectory();
     String path = join(appDocumentDirectory.path, _dbFileName);
-    return await openDatabase(path, version: version, onOpen: (db){}, onCreate: (Database db, int version) {});
+    return await openDatabase(path, version: version, onOpen: (db){
+      return db.execute("PRAGMA foreign_keys = ON");
+    }, onCreate: (Database db, int version) {});
   }
 
   Future<bool> tableExists(String tableName) async {
@@ -64,5 +66,16 @@ class MasterDB {
   Future<void> dropTable(String tableName) async {
     final db = await database;
     await db.execute("DROP TABLE IF EXIST ?", [tableName]);
+  }
+
+  Future<int> getNextIDFromDB(String tableName, String primaryKey) async {
+    final db = await database;
+    var dbQuery = await db.rawQuery('SELECT COALESCE(MAX($primaryKey)+1, 0) FROM ?', [tableName]);
+    if(dbQuery.length > 0) {
+      var ret = Sqflite.firstIntValue(dbQuery);
+      return ret;
+    } else {
+      return 0;
+    }
   }
 }
