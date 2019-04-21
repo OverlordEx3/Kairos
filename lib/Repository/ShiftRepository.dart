@@ -29,7 +29,6 @@ class ShiftRepository implements IRepository<Shift> {
 
   @override
   Future<Shift> update(int key, {Map<String, dynamic> params, Map<String, dynamic> whereArgs}) async {
-    // TODO: implement update
     final shift = Shift(uid: params['uid'], status: params['status'], date: params['date']);
     await provider.update(shift);
     return null;

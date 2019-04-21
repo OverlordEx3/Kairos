@@ -30,4 +30,5 @@ class _AttendanceModel {
 class Attendance extends _AttendanceModel {
 	Attendance(bool attendant,int peopleID, int shiftID, [int id, int sectionID, int groupID]) :
 				super(attendant, peopleID, shiftID, id, sectionID, groupID);
+	factory Attendance.fromMap(Map<String, dynamic> params) => _AttendanceModel.fromMap(params);
 }

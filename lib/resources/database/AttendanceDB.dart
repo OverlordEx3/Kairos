@@ -48,6 +48,12 @@ class AttendanceDB {
 		return await db.delete(this.tableName, where: '$primaryKey = ?', whereArgs: [key]);
 	}
 
+	Future<Attendance> getAttendanceItem(int id) async {
+		final db = await masterDatabase.database;
+		final query = await db.query(this.tableName, where: '${this.primaryKey} = ?', whereArgs: [id]);
+		return Attendance.fromMap(query.first);
+	}
+
 	Future<List<Attendance>> getAttendanceByShift(int shiftID) async {
 		final db = await masterDatabase.database;
 		final query = await db.query(this.tableName, where: 'ShiftFK = ?', whereArgs: [shiftID]);
