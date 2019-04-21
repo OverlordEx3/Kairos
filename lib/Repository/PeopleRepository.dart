@@ -50,7 +50,10 @@ class PeopleRepository implements IRepository<People> {
         name: params['name'],
         surname: params['surname'],
         shortBio: params['shortbio'],
-        sectionID: params['section']);
+        sectionID: params['section'],
+      groupID: params['groupid'],
+      imgURI: params['imguri'],
+    );
     cache.add(person.hashCode, person);
 
     await provider.update(person, whereArgs: whereArgs);

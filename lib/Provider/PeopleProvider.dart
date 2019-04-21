@@ -10,7 +10,7 @@ class PeopleLocalProvider implements IProvider<People> {
 
   @override
   Future<People> add(Map<String, dynamic> params) async{
-    final item = peopleDatabase.addPerson(params['name'], params['surname'], params['shortBio'], params['section']);
+    final item = peopleDatabase.addPerson(params['name'], params['surname'], params['shortBio'], params['section'], params['groupid'], params['imguri']);
     return await item;
   }
 

@@ -12,12 +12,12 @@ class _AttendanceModel {
 	_AttendanceModel(this.attendant,this.peopleID, this.shiftID, [this.id, this.sectionID, this.groupID]);
 
 	factory _AttendanceModel.fromMap(Map<String, dynamic> params) {
-		return _AttendanceModel(params['attendant'], params['personid'], params['shiftID'], params['id'], params['section'], params['group']);
+		return _AttendanceModel((params['attendant'] == 1) ? true : false, params['personid'], params['shiftID'], params['id'], params['section'], params['group']);
 	}
 
 	Map<String, dynamic> toMap() {
 		return <String, dynamic>{
-			'attendant': this.attendant,
+			'attendant': (this.attendant == true) ? 1 : 0,
 			'personid' : this.peopleID,
 			'shiftid' : this.shiftID,
 			'id' : this.id,

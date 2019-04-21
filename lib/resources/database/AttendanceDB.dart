@@ -53,7 +53,7 @@ class AttendanceDB {
 		final query = await db.query(this.tableName, where: 'ShiftFK = ?', whereArgs: [shiftID]);
 		return List.generate(query.length, (i) {
 			return Attendance(
-				query[i]['attendant'],
+					(query[i]['attendant'] == 1) ? true : false,
 				query[i]['personid'],
 				query[i]['shiftID'],
 				query[i]['id'],
@@ -68,7 +68,7 @@ class AttendanceDB {
 		final query = await db.query(this.tableName, where: 'peopleFK = ?', whereArgs: [personID]);
 		return List.generate(query.length, (i) {
 			return Attendance(
-					query[i]['attendant'],
+					(query[i]['attendant'] == 1) ? true : false,
 					query[i]['personid'],
 					query[i]['shiftID'],
 					query[i]['id'],
