@@ -1,22 +1,18 @@
 
-class _GroupModel {
+class Group {
 	int id;
 	String name;
 
-	_GroupModel(this.name, [this.id]);
+	Group(this.name, [this.id]);
 
-	factory _GroupModel.fromMap(Map<String, dynamic> params) {
-		return _GroupModel(params['name'], params['id']);
+	factory Group.fromMap(Map<String, dynamic> params) {
+		return Group(params['groupname'], params['id']);
 	}
 
 	Map<String, dynamic> toMap() {
 		return <String, dynamic> {
-			'name' : this.name,
+			'groupname' : this.name,
 			'id' : this.id
 		};
 	}
-}
-
-class Group extends _GroupModel {
-	Group(String name, [int id]) : super(name, id);
 }

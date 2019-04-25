@@ -5,9 +5,14 @@ import '../resources/database/ShiftDB.dart' show shiftDB;
 class ShiftLocalProvider implements IProvider<Shift> {
   IProviderLocation get location => IProviderLocation.local;
 
+  ShiftLocalProvider() {
+    /* Check table before an operation */
+    shiftDB.initTable();
+  }
+
   @override
   Future<Shift> add(Map<String, dynamic> params) async {
-    return await shiftDB.addShift(params['date'], params['status']);
+    return await shiftDB.addShift(params);
   }
 
   @override

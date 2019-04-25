@@ -45,15 +45,7 @@ class PeopleRepository implements IRepository<People> {
   Future<People> update(int key,
       {Map<String, dynamic> params, Map<String, dynamic> whereArgs}) async {
     cache.remove(key);
-    final person = People(
-        uniqueID: params['uid'],
-        name: params['name'],
-        surname: params['surname'],
-        shortBio: params['shortbio'],
-        sectionID: params['section'],
-      groupID: params['groupid'],
-      imgURI: params['imguri'],
-    );
+    final person = People.fromMap(params);
     cache.add(person.hashCode, person);
 
     await provider.update(person, whereArgs: whereArgs);

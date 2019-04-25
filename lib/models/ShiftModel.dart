@@ -12,34 +12,27 @@ enum ShiftStatus {
   SHIFT_EDITED
 }
 
-class _ShiftModel {
+class Shift {
   int uid;
   int date;
   ShiftStatus status;
 
-  _ShiftModel({this.uid, this.date, this.status});
+  Shift({this.uid, this.date, this.status});
 
 /* Constructors*/
-  factory _ShiftModel.fromJSON(Map<String, dynamic> parsedJson) {
-    return _ShiftModel(
-      uid: parsedJson['id'],
-      date: parsedJson['dt'],
-      status: parsedJson['st']
+  factory Shift.fromMap(Map<String, dynamic> parsedJson) {
+    return Shift(
+      uid: parsedJson['uid'],
+      date: parsedJson['date'],
+      status: ShiftStatus.values[parsedJson['status']]
     );
   }
 
   Map<String, dynamic> toMap(){
     return <String, dynamic> {
-      'id' : this.uid,
-      'dt' : this.date,
-      'st' : this.status
+      'uid' : this.uid,
+      'date' : this.date,
+      'status' : this.status.index
     };
   }
-}
-
-/* Aliasing */
-class Shift extends _ShiftModel {
-  Shift({int uid, int date, ShiftStatus status}) : super(uid: uid, date: date, status: status);
-  factory Shift.fromJSON(Map<String, dynamic> json) => _ShiftModel.fromJSON(json);
-  factory Shift.fromMap(Map<String, dynamic> params) => Shift.fromJSON(params);
 }

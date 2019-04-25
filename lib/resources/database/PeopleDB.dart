@@ -10,40 +10,31 @@ final PeopleDB peopleDatabase = PeopleDB();
 class PeopleDB {
   final String tableName = "People";
   final String primaryKey = 'uid';
+  Map<String, String> tableParams;
 
   PeopleDB() {
-    final Map<String, String> tableParams = {
+    tableParams = {
       primaryKey: "INTEGER PRIMARY KEY",
       "name": "TEXT",
       "surname": "TEXT",
       "short": "TEXT",
       "imguri": "TEXT",
-      "section":
-          "REFERENCES ${sectionDB.tableName}(${sectionDB.primaryKey}) ON UPDATE CASCADE ON DELETE SET NULL",
-      "group":
-          "REFERENCES ${groupDB.tableName}(${groupDB.primaryKey}) ON UPDATE CASCADE ON DELETE CASCADE"
+      "sectionid" : "INTEGER DEFAULT NULL REFERENCES ${sectionDB.tableName}(${sectionDB.primaryKey}) ON UPDATE CASCADE ON DELETE SET NULL",
+      "groupid" : "INTEGER NOT NULL REFERENCES ${groupDB.tableName}(${groupDB.primaryKey}) ON UPDATE CASCADE ON DELETE CASCADE"
     };
-    /* Check if table exists */
-    masterDatabase.tableExists(tableName).then((result) {
-      if (result == false) {
-        masterDatabase.createTable(tableName, tableParams);
-      }
-    });
+  }
+
+  initTable() async {
+    /* Check database */
+    await masterDatabase.checkAndCreateTable(tableName, tableParams);
   }
 
   /*  People operation */
   Future<People> addPerson(
-      String name, String surname, String shortBio, int section, int group,
-      [String imgURI]) async {
+      Map<String, dynamic> params) async {
     final db = await masterDatabase.database;
-    People person = People(
-        uniqueID: await masterDatabase.getNextIDFromDB(tableName, primaryKey),
-        name: name,
-        surname: surname,
-        shortBio: shortBio,
-        sectionID: section,
-        groupID: group,
-        imgURI: imgURI);
+    final person = People.fromMap(params);
+    person.uid = await masterDatabase.getNextIDFromDB(tableName, primaryKey);
     await db.insert(tableName, person.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
 
@@ -70,15 +61,7 @@ class PeopleDB {
       return null;
     }
 
-    return People(
-      uniqueID: dbResult.first['uid'],
-      name: dbResult.first['name'],
-      surname: dbResult.first['surname'],
-      shortBio: dbResult.first['short'],
-      sectionID: dbResult.first['section'],
-      groupID: dbResult.first['groupid'],
-      imgURI: dbResult.first['imguri'],
-    );
+    return People.fromMap(dbResult.first);
   }
 
   Future<List<People>> getAllPeople() async {
@@ -86,15 +69,7 @@ class PeopleDB {
     final List<Map<String, dynamic>> dbResult = await db.query(tableName);
 
     return List.generate(dbResult.length, (i) {
-      return People(
-        uniqueID: dbResult[i]['uid'],
-        name: dbResult[i]['name'],
-        surname: dbResult[i]['surname'],
-        shortBio: dbResult[i]['short'],
-        sectionID: dbResult[i]['section'],
-        groupID: dbResult[i]['groupid'],
-        imgURI: dbResult[i]['imguri'],
-      );
+      return People.fromMap(dbResult[i]);
     });
   }
 }

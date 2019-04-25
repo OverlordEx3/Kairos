@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../CustomWidgets/CustomScaffold.dart';
-import '../NotImplemented.dart' as notImplemented;
+import 'package:count_me_in/CustomWidgets/NotImplemented.dart' as notImplemented;
 
 const HomePath = '/';
 

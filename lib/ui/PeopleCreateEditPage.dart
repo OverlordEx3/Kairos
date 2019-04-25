@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../blocs/PeopleBLoC.dart';
-import '../../models/PeopleModel.dart';
+import '../blocs/PeopleBLoC.dart';
+import '../models/PeopleModel.dart';
 
 class PeopleEditCreatePage extends StatefulWidget {
   final bool edit;
@@ -118,7 +118,7 @@ class _PeopleEditCreatePageState extends State<PeopleEditCreatePage> {
     /* Check operation*/
     if (widget.edit == true) {
       /* Request editing */
-      peopleBloc.update(People(uniqueID: widget.people.uid, name: _nameTextController.text, surname: _surnameTextController.text, shortBio: _miscController.text, sectionID: -1));
+      peopleBloc.update(People(uid: widget.people.uid, name: _nameTextController.text, surname: _surnameTextController.text, shortBio: _miscController.text, sectionID: -1));
     } else {
       /* Save new one */
       peopleBloc.submitNew(_nameTextController.text,

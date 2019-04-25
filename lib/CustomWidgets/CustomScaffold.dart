@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'CustomDrawer.dart';
+import 'AppDrawer.dart';
 import 'CustomAppbar.dart';
-import '../NotImplemented.dart' show notImplemented;
+import 'NotImplemented.dart' show notImplemented;
 
 class CustomScaffold extends Scaffold {
   CustomScaffold(
@@ -16,7 +16,7 @@ class CustomScaffold extends Scaffold {
             floatingActionButton: fab,
             floatingActionButtonLocation: location,
             body: body,
-            drawer: CustomDrawer(context: context),
+            drawer: KairosAppDrawer(),
             appBar: CustomAppbar(context: context, title: Text("Kairos")),
             bottomNavigationBar: bottomNavBar);
 }

@@ -8,25 +8,26 @@ final ShiftDB shiftDB = ShiftDB();
 class ShiftDB {
 	final String tableName = "Shift";
 	final String primaryKey = 'uid';
+	Map<String, String> tableParams;
 
 	ShiftDB() {
-		final Map<String, String> tableParams =
+		tableParams =
 		{
 			primaryKey : "INTEGER PRIMARY KEY",
 			"date" : "INTEGER",
 			"status" : "INTEGER"
 		};
-
-		masterDatabase.tableExists(tableName).then((result) {
-			if(result == false) {
-				masterDatabase.createTable(tableName, tableParams);
-			}
-		});
 	}
 
-	Future<Shift> addShift(DateTime date, ShiftStatus status) async {
+	initTable() async {
+		/* Check database */
+		await masterDatabase.checkAndCreateTable(tableName, tableParams);
+	}
+
+	Future<Shift> addShift(Map<String, dynamic> params) async {
 		final db = await masterDatabase.database;
-		final shift = Shift(uid: await masterDatabase.getNextIDFromDB(tableName, primaryKey), status: status, date: date.millisecondsSinceEpoch);
+		var shift = Shift.fromMap(params);
+		shift.uid = await masterDatabase.getNextIDFromDB(tableName, primaryKey);
 		await db.insert(tableName, shift.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
 
 		return shift;
@@ -34,12 +35,12 @@ class ShiftDB {
 
 	Future<int> updateShift(Shift shift) async {
 		final db = await masterDatabase.database;
-		return await db.update(tableName, shift.toMap(), where: 'uid = ?', whereArgs: [shift.uid]);
+		return await db.update(tableName, shift.toMap(), where: '$primaryKey = ?', whereArgs: [shift.uid]);
 	}
 
 	Future<int> deleteShift(int key) async {
 		final db = await masterDatabase.database;
-		return await db.delete(tableName, where: 'uid = ?', whereArgs: [key]);
+		return await db.delete(tableName, where: '$primaryKey = ?', whereArgs: [key]);
 	}
 
 	Future<List<Shift>> getAllShifts() async {
@@ -47,11 +48,7 @@ class ShiftDB {
 		final List<Map<String, dynamic>> dbResult = await db.query(tableName);
 
 		return List.generate(dbResult.length, (i) {
-			return Shift(
-				uid: dbResult[i]['uid'],
-				date: dbResult[i]['date'],
-				status: dbResult[i]['status']
-			);
+			return Shift.fromMap(dbResult[i]);
 		});
 	}
 }

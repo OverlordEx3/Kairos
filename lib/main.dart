@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'ui/routes/HomePage.dart';
-import 'ui/routes/ListPage.dart';
+import 'package:count_me_in/ui/HomePage.dart';
+import 'package:count_me_in/ui/ListPage.dart';
 
 void main() => runApp(MyApp());
 

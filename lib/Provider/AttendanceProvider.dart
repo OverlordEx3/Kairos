@@ -6,9 +6,14 @@ class AttendanceProvider implements IProvider<Attendance> {
 	@override
 	IProviderLocation get location => IProviderLocation.local;
 
+	AttendanceProvider() {
+		/* Check table before any operation */
+		attendanceDB.initTable();
+	}
+
   @override
   Future<Attendance> add(Map<String, dynamic> params) {
-    return attendanceDB.addAttendanceItem(params['attendant'], params['personid'], params['shiftID']);
+    return attendanceDB.addAttendanceItem(params);
   }
 
   @override

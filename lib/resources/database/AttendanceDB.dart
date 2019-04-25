@@ -1,6 +1,5 @@
 import 'dart:core';
 import '../../models/AttendanceModel.dart' show Attendance;
-import '../../models/PeopleModel.dart' show People;
 import 'masterDb.dart' show masterDatabase;
 import 'PeopleDB.dart' show peopleDatabase;
 import 'ShiftDB.dart' show shiftDB;
@@ -12,30 +11,34 @@ final AttendanceDB attendanceDB = AttendanceDB();
 class AttendanceDB {
 	final String tableName = "Attendance";
 	final String primaryKey = 'id';
+	Map<String, String> tableParams;
 
 	AttendanceDB() {
-		final Map<String, String> tableParams =
+		tableParams =
 		{
 			primaryKey : "INTEGER PRIMARY KEY",
 			"attendance" : "INTEGER",
-			"FOREIGN KEY(peopleFK)" : "REFERENCES ${peopleDatabase.tableName}(${peopleDatabase.primaryKey}) ON UPDATE CASCADE ON DELETE CASCADE",
-			"FOREIGN KEY(shiftFK)" : "REFERENCES ${shiftDB.tableName}(${shiftDB.primaryKey}) ON UPDATE CASCADE ON DELETE CASCADE",
-			"FOREIGN KEY(sectionFK)" : "REFERENCES ${sectionDB.tableName}(${sectionDB.primaryKey}) ON UPDATE CASCADE ON DELETE CASCADE",
-			"FOREIGN KEY(groupFK)" : "REFERENCES ${groupDB.tableName}(${groupDB.primaryKey}) ON UPDATE CASCADE ON DELETE CASCADE"
+			"personid" : "INTEGER NOT NULL REFERENCES ${peopleDatabase.tableName}(${peopleDatabase.primaryKey}) ON UPDATE CASCADE ON DELETE CASCADE",
+			"shiftid" : "INTEGER NOT NULL REFERENCES ${shiftDB.tableName}(${shiftDB.primaryKey}) ON UPDATE CASCADE ON DELETE CASCADE",
+			"sectionid" : "INTEGER REFERENCES ${sectionDB.tableName}(${sectionDB.primaryKey}) ON UPDATE CASCADE ON DELETE CASCADE",
+			"groupid" : "INTEGER NOT NULL REFERENCES ${groupDB.tableName}(${groupDB.primaryKey}) ON UPDATE CASCADE ON DELETE CASCADE",
 		};
-
-		masterDatabase.tableExists(tableName).then((result) {
-			if(result == false) {
-				masterDatabase.createTable(tableName, tableParams);
-			}
-		});
 	}
 
-	Future<Attendance> addAttendanceItem(bool attendance, int peopleID, int shiftID) async {
+	initTable() async {
+		/* Check database */
+		await masterDatabase.checkAndCreateTable(tableName, tableParams);
+	}
+
+	Future<Attendance> addAttendanceItem(Map<String, dynamic> params) async {
 		final db = await masterDatabase.database;
 		/* Calculate foreign keys from people ID */
-		final people = await peopleDatabase.getPeopleById(peopleID);
-		final attendanceItem = Attendance(attendance, peopleID, shiftID, await masterDatabase.getNextIDFromDB(tableName, primaryKey), people?.sectionID, people?.groupID);
+		final people = await peopleDatabase.getPeopleById(params['peopleid']);
+		var attendanceItem = Attendance.fromMap(params);
+		attendanceItem.id = await masterDatabase.getNextIDFromDB(tableName, primaryKey);
+		attendanceItem.peopleID = params['peopleid'];
+		attendanceItem.sectionID = people?.sectionID;
+		attendanceItem.groupID = people?.groupID;
 		await db.insert(this.tableName, attendanceItem.toMap());
 
 		return attendanceItem;
@@ -59,31 +62,17 @@ class AttendanceDB {
 
 	Future<List<Attendance>> getAttendanceByShift(int shiftID) async {
 		final db = await masterDatabase.database;
-		final query = await db.query(this.tableName, where: 'ShiftFK = ?', whereArgs: [shiftID]);
+		final query = await db.query(this.tableName, where: 'shiftid = ?', whereArgs: [shiftID]);
 		return List.generate(query.length, (i) {
-			return Attendance(
-					(query[i]['attendant'] == 1) ? true : false,
-				query[i]['personid'],
-				query[i]['shiftID'],
-				query[i]['id'],
-				query[i]['section'],
-				query[i]['group']
-			);
+			return Attendance.fromMap(query[i]);
 		});
 	}
 
 	Future<List<Attendance>> getAttendanceByPerson(int personID) async {
 		final db = await masterDatabase.database;
-		final query = await db.query(this.tableName, where: 'peopleFK = ?', whereArgs: [personID]);
+		final query = await db.query(this.tableName, where: 'personid = ?', whereArgs: [personID]);
 		return List.generate(query.length, (i) {
-			return Attendance(
-					(query[i]['attendant'] == 1) ? true : false,
-					query[i]['personid'],
-					query[i]['shiftID'],
-					query[i]['id'],
-					query[i]['section'],
-					query[i]['group']
-			);
+			return Attendance.fromMap(query[i]);
 		});
 	}
 }

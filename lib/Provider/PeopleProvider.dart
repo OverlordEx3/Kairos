@@ -8,9 +8,14 @@ import '../resources/database/PeopleDB.dart' show peopleDatabase;
 class PeopleLocalProvider implements IProvider<People> {
   IProviderLocation get location => IProviderLocation.local;
 
+  PeopleLocalProvider() {
+    /* Check table before any operation */
+    peopleDatabase.initTable();
+  }
+
   @override
   Future<People> add(Map<String, dynamic> params) async{
-    final item = peopleDatabase.addPerson(params['name'], params['surname'], params['shortBio'], params['section'], params['groupid'], params['imguri']);
+    final item = peopleDatabase.addPerson(params);
     return await item;
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import '../NotImplemented.dart' show notImplemented;
+import 'NotImplemented.dart' show notImplemented;
 
 class CustomAppbar extends AppBar {
 

@@ -1,5 +1,5 @@
 import 'package:rxdart/rxdart.dart';
-
+import 'dart:async';
 import '../models/PeopleModel.dart' show People;
 import 'package:count_me_in/Repository/PeopleRepository.dart' show PeopleRepository;
 import '../Repository/PeopleCache.dart' show PeopleHashCache;
@@ -7,7 +7,7 @@ import '../Provider/PeopleProvider.dart' show PeopleLocalProvider;
 
 final PeopleBloc peopleBloc = PeopleBloc();
 
-class PeopleBloc {
+class PeopleBloc extends PeopleFormValidators{
   /* Repository, handling internally all data from services (web/local) */
   final _repository = PeopleRepository(cache: PeopleHashCache(), provider: PeopleLocalProvider());
 
@@ -26,6 +26,15 @@ class PeopleBloc {
   final _peopleUpdateController = new PublishSubject<People>();
   Sink<People> get _updatePeople => _peopleUpdateController.sink;
 
+  /* Used to validate form fields */
+  final _nameValidateController = new BehaviorSubject<String>();
+  Stream<String> get name => _nameValidateController.stream.transform(validateNameSurname);
+  Function(String) get changeName => _nameValidateController.sink.add;
+  final _surnameValidateController = new BehaviorSubject<String>();
+  Stream<String> get surname => _surnameValidateController.stream.transform(validateNameSurname);
+  Function(String) get changeSurname => _surnameValidateController.sink.add;
+
+  Stream<bool> get submitValid => Observable.combineLatest2(name, surname, (n, s) => true);
 
   /* Constructor */
   PeopleBloc() {
@@ -48,13 +57,7 @@ class PeopleBloc {
   }
 
   void _handleUpdatePeople(People item) async {
-    _repository.update(item.hashCode, params: {
-      'uid' : item.uid,
-      'name' : item.name,
-      'surname' : item.surname,
-      'shortbio' : item.shortBio,
-      'section' : item.sectionID
-    }).then((value) async {
+    _repository.update(item.hashCode, params: item.toMap()).then((value) async {
       retrieveAll();
     });
   }
@@ -79,8 +82,10 @@ class PeopleBloc {
     _addPeople.add({
       'name' : name,
       'surname' : surname,
-      'shortbio' : shortBio,
-      'section' : sectionID
+      'short' : shortBio,
+      'sectionid' : sectionID,
+      'groupid' : 0,
+      'imguri' : ""
     });
   }
 
@@ -91,4 +96,17 @@ class PeopleBloc {
   update(People item) async {
     _updatePeople.add(item);
   }
+}
+
+class PeopleFormValidators {
+  final validateNameSurname =
+  StreamTransformer<String, String>.fromHandlers(handleData: (nameSurname, sink) {
+    if(nameSurname.isEmpty) {
+      sink.addError('Field must be entered!');
+    } else if(nameSurname.length > 15) {
+      sink.addError('Field length must be shorter than 15!');
+    } else {
+      sink.add(nameSurname);
+    }
+  });
 }

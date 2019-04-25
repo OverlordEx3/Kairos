@@ -6,26 +6,27 @@ import 'masterDb.dart' show masterDatabase;
 final GroupDB groupDB = GroupDB();
 
 class GroupDB {
-	final String tableName = "group";
+	final String tableName = "SGroup";
 	final String primaryKey = 'id';
+	Map<String, String> tableParams;
 
 	GroupDB() {
-		final Map<String, String> tableParams =
+		tableParams =
 		{
 			primaryKey : "INTEGER PRIMARY KEY",
 			"groupname" : "TEXT"
 		};
-
-		masterDatabase.tableExists(tableName).then((result) {
-			if(result == false) {
-				masterDatabase.createTable(tableName, tableParams);
-			}
-		});
 	}
 
-	Future<Group> addGroup(String name) async {
+	initTable() async {
+		/* Check database */
+		await masterDatabase.checkAndCreateTable(tableName, tableParams);
+	}
+
+	Future<Group> addGroup(Map<String, dynamic> params) async {
 		final db = await masterDatabase.database;
-		final group = Group(name, await masterDatabase.getNextIDFromDB(this.tableName, this.primaryKey));
+		final group = Group.fromMap(params);
+		group.id = await masterDatabase.getNextIDFromDB(tableName, primaryKey);
 		await db.insert(tableName, group.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
 		return group;
 	}
@@ -38,5 +39,16 @@ class GroupDB {
 	Future<int> deleteGroup(int key) async {
 		final db = await masterDatabase.database;
 		return await db.delete(tableName, where: '${this.primaryKey} = ?', whereArgs: [key]);
+	}
+
+	Future<Group> getGroupById(int id) async {
+		final db = await masterDatabase.database;
+		final dbResult = await db.query(tableName, where: '${this.primaryKey} = ?', whereArgs: [id]);
+
+		if(dbResult.length == 0) {
+			return null;
+		}
+
+		return Group.fromMap(dbResult.first);
 	}
 }

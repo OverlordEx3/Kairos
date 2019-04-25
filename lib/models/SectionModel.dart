@@ -1,5 +1,5 @@
 
-class _SectionModel {
+class Section {
 	int id;
 	String name;
 	int color;
@@ -7,22 +7,18 @@ class _SectionModel {
 	/* Foreign key */
 	int groupID;
 
-	_SectionModel(this.name, this.id, [this.color, this.groupID]);
+	Section(this.name, this.id, [this.color, this.groupID]);
 
-	factory _SectionModel.fromMap(Map<String, dynamic> params) {
-		return _SectionModel(params['name'], params['id'], params['color'], params['group']);
+	factory Section.fromMap(Map<String, dynamic> params) {
+		return Section(params['sectionname'], params['id'], params['color'], params['groupid']);
 	}
 
 	Map<String, dynamic> toMap() {
 		return <String, dynamic> {
-			'name' : this.name,
+			'sectionname' : this.name,
 			'id' : this.id,
 			'color' : this.color,
-			'group' : this.groupID
+			'groupid' : this.groupID
 		};
 	}
-}
-
-class Section extends _SectionModel {
-	Section(String name, int id, [int color, int groupID]) : super(name, id, color, groupID);
 }
