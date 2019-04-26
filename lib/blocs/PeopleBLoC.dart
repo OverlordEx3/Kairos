@@ -78,14 +78,14 @@ class PeopleBloc extends PeopleFormValidators{
     _repository.getAll().then((value) => _notify(value));
   }
 
-  submitNew([String name, String surname, String shortBio, int sectionID]) async {
+  submitNew({String name, String surname, String shortBio, int sectionID = -1, String imgURI}) async {
     _addPeople.add({
       'name' : name,
       'surname' : surname,
       'short' : shortBio,
       'sectionid' : sectionID,
-      'groupid' : 0,
-      'imguri' : ""
+      'groupid' : 0, //TODO query from configuration
+      'imguri' : imgURI
     });
   }
 

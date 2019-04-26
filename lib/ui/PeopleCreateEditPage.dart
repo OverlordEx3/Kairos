@@ -118,11 +118,22 @@ class _PeopleEditCreatePageState extends State<PeopleEditCreatePage> {
     /* Check operation*/
     if (widget.edit == true) {
       /* Request editing */
-      peopleBloc.update(People(uid: widget.people.uid, name: _nameTextController.text, surname: _surnameTextController.text, shortBio: _miscController.text, sectionID: -1));
+      var people = widget.people;
+      people.name = _nameTextController.value.text;
+      people.surname = _surnameTextController.value.text;
+      people.shortBio = _miscController.value.text;
+      people.imgURI = "";
+      people.sectionID = -1;
+      peopleBloc.update(people);
     } else {
       /* Save new one */
-      peopleBloc.submitNew(_nameTextController.text,
-          _surnameTextController.text, _miscController.text, -1); /*  TODO actual section support */
+      peopleBloc.submitNew(
+        name: _nameTextController.value.text,
+        surname: _surnameTextController.value.text,
+        shortBio: _miscController.value.text,
+        imgURI: "",
+        sectionID: -1
+      ); /*  TODO actual section support */
     }
 
     return true;

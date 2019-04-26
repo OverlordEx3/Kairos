@@ -37,7 +37,9 @@ class _PeopleListItemState extends State<PeopleListItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 3.0),
+      child: Material(
         elevation: 2.0,
         child: ListTile(
           leading: _imageHeader(context),
@@ -63,6 +65,6 @@ class _PeopleListItemState extends State<PeopleListItem> {
                     });
                   })
               : null,
-        ));
+        )));
   }
 }

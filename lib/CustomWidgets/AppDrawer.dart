@@ -4,7 +4,7 @@ import 'NotImplemented.dart' show notImplemented;
 class KairosAppDrawer extends StatelessWidget {
   final double elevation;
   final Key key;
-  KairosAppDrawer({this.elevation = 16.0, this.key});
+  const KairosAppDrawer({this.elevation = 16.0, this.key});
 
   @override
   Widget build(BuildContext context) {

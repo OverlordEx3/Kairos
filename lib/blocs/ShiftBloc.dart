@@ -87,6 +87,16 @@ class ShiftBloc {
     _shiftStatusSink(ShiftStatus.SHIFT_ERROR);
   }
 
+  cancelShift() async {
+    if (shiftActive != true) {
+      print("Requested shift cancel on a inactive shift!");
+      return;
+    }
+    _currentAttendanceList.clear();
+    _currentShiftHandle = null;
+    shiftActive = false;
+  }
+
   setAttendant(int id, bool attendant) {
   	_shiftAttendanceAddItem({id : attendant});
   }
