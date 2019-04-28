@@ -8,8 +8,8 @@ class Attendance {
   int sectionID;
   int groupID;
 
-  Attendance(this.attendant, this.peopleID, this.shiftID,
-      [this.id, this.sectionID, this.groupID]);
+  Attendance(this.attendant, this.peopleID, this.shiftID, this.groupID,
+      [this.id, this.sectionID]);
 
   factory Attendance.fromMap(Map<String, dynamic> params) {
     return Attendance(

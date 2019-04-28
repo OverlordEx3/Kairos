@@ -11,7 +11,7 @@ import 'AttendanceDB.dart';
 import 'SectionDB.dart';
 import 'ShiftDB.dart';
 
-final MasterDB masterDatabase = MasterDB(version: 2);
+final MasterDB masterDatabase = MasterDB(version: 3);
 
 class MasterDB {
   final String _dbFileName = "Master.db";
@@ -81,7 +81,7 @@ class MasterDB {
 
       batch.insert(sectionDB.tableName, {
         'sectionname' : 'default',
-        'id' : -1,
+        'id' : 0,
         'color' : 0x00000000,
         'groupid' : 0
       });

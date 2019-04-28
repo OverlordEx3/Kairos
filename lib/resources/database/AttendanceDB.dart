@@ -32,13 +32,7 @@ class AttendanceDB {
 
 	Future<Attendance> addAttendanceItem(Map<String, dynamic> params) async {
 		final db = await masterDatabase.database;
-		/* Calculate foreign keys from people ID */
-		final people = await peopleDatabase.getPeopleById(params['personid']);
 		var attendanceItem = Attendance.fromMap(params);
-		attendanceItem.id = await masterDatabase.getNextIDFromDB(tableName, primaryKey);
-		attendanceItem.peopleID = params['personid'];
-		attendanceItem.sectionID = people?.sectionID;
-		attendanceItem.groupID = people?.groupID;
 		await db.insert(this.tableName, attendanceItem.toMap());
 
 		return attendanceItem;

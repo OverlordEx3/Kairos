@@ -70,7 +70,7 @@ class ShiftBloc {
     }
 
     _currentAttendanceList.forEach((id, att) async {
-      var attendance = Attendance(att, id, _currentShiftHandle.uid);
+      var attendance = Attendance(att, id, _currentShiftHandle.uid, 0); /*  TODO report other data */
       _attendanceRepository.add(params: attendance.toMap());
     });
 
