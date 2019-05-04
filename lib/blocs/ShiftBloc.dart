@@ -13,18 +13,6 @@ import 'package:count_me_in/Repository/ShiftRepository.dart';
 final ShiftBloc shiftBloc = ShiftBloc();
 
 class ShiftBloc {
-  /* Keep track of the last shift. If one is active, of course */
-  bool shiftActive = false;
-  Shift _currentShiftHandle;
-  Map<int, bool> _currentAttendanceList = Map<int, bool>();
-
-  final initialStatus = ShiftStatus.SHIFT_ERROR;
-
-  /* Repositories */
-  final _shiftRepository = ShiftRepository(provider: ShiftLocalProvider());
-  final _attendanceRepository =
-      AttendanceRepository(provider: AttendanceProvider());
-
   /* Control streams */
   final _shiftFetchController = new PublishSubject<ShiftStatus>();
   Stream<ShiftStatus> get shiftStatusStream => _shiftFetchController.stream;
@@ -46,58 +34,23 @@ class ShiftBloc {
   }
 
   void _handleShiftAttendanceAdd(Map<int, bool> params) {
-    _currentAttendanceList[params.keys.first] = params.values.first;
+
   }
 
   requestNewShift() async {
-    if (shiftActive != true) {
-      shiftActive = true;
-      _shiftRepository.add(params: {
-        'date': DateTime.now().millisecondsSinceEpoch,
-        'status': ShiftStatus.SHIFT_NEW.index
-      }).then((shift) {
-        _currentShiftHandle = shift;
-        _shiftStatusSink(_currentShiftHandle.status);
-      });
-    }
+
   }
 
   /* Map <int, bool> = map PeopleID with attendance true/false */
   closeShift() async {
-    if (shiftActive != true) {
-      print("Requested shift close on a inactive shift!");
-      return;
-    }
 
-    _currentAttendanceList.forEach((id, att) async {
-      var attendance = Attendance(att, id, _currentShiftHandle.uid, 0); /*  TODO report other data */
-      _attendanceRepository.add(params: attendance.toMap());
-    });
-
-    /* Finally, close shift */
-    _currentShiftHandle.status = ShiftStatus.SHIFT_CLOSED;
-    _shiftRepository
-        .update(_currentShiftHandle.hashCode,
-            params: _currentShiftHandle.toMap())
-        .then((shift) {
-      _currentShiftHandle = null;
-      shiftActive = false;
-    });
-
-    _shiftStatusSink(ShiftStatus.SHIFT_ERROR);
   }
 
   cancelShift() async {
-    if (shiftActive != true) {
-      print("Requested shift cancel on a inactive shift!");
-      return;
-    }
-    _currentAttendanceList.clear();
-    _currentShiftHandle = null;
-    shiftActive = false;
+
   }
 
   setAttendant(int id, bool attendant) {
-  	_shiftAttendanceAddItem({id : attendant});
+
   }
 }
