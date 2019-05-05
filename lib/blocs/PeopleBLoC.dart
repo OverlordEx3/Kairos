@@ -5,22 +5,21 @@ import '../models/PeopleModel.dart' show People;
 
 final PeopleBloc peopleBloc = PeopleBloc();
 
-class PeopleBloc extends PeopleFormValidators{
-
+class PeopleBloc extends _PeopleFormValidators{
   /* Stream Controller, used to handle in/out data to the repository */
-  final _peopleFetchController = new PublishSubject<List<People>>();
+  final _fetchController = new PublishSubject<List<People>>();
   /* Getter method to retrieve all people from stream. Stream list
    * to know when some child of it changed. Or received.
    * It's, primarily, a Subscriber*/
-  Stream<List<People>> get peopleStream => _peopleFetchController.stream;
-  Sink<List<People>> get _inPeopleSink => _peopleFetchController.sink;
+  Stream<List<People>> get peopleStream => _fetchController.stream;
+  Function(List<People>) get _addPeopleListSink => _fetchController.sink.add;
 
-  final _peopleAddController = new PublishSubject<Map<String, dynamic>>();
-  Sink<Map<String, dynamic>> get _addPeople => _peopleAddController.sink;
-  final _peopleRemoveController = new PublishSubject<People>();
-  Sink<People> get _removePeople => _peopleRemoveController.sink;
-  final _peopleUpdateController = new PublishSubject<People>();
-  Sink<People> get _updatePeople => _peopleUpdateController.sink;
+  final _addController = new PublishSubject<People>();
+  Function(People) get _addPeople => _addController.sink.add;
+  final _removeController = new PublishSubject<People>();
+  Function(People) get _removePeople => _removeController.sink.add;
+  final _updateController = new PublishSubject<People>();
+  Function(People) get _updatePeople => _updateController.sink.add;
 
   /* Used to validate form fields */
   final _nameValidateController = new BehaviorSubject<String>();
@@ -34,50 +33,52 @@ class PeopleBloc extends PeopleFormValidators{
 
   /* Constructor */
   PeopleBloc() {
-    _peopleAddController?.listen(_handleAddPeople);
-    _peopleRemoveController?.listen(_handleRemovePeople);
-    _peopleUpdateController?.listen(_handleUpdatePeople);
+    _addController?.listen(_addToRepository);
+    _removeController?.listen(_removeFromRepository);
+    _updateController?.listen(_updateRepository);
   }
 
   /* Private controller listener. All magic is done here */
-  void _handleRemovePeople(People key) async {
+  void _removeFromRepository(People key) async {
 
   }
 
-  void _handleAddPeople(Map<String, dynamic> params) async {
+  void _addToRepository(People people) async {
 
   }
 
-  void _handleUpdatePeople(People item) async {
+  void _updateRepository(People item) async {
 
   }
 
   /* PUBLIC METHODS */
   dispose() async {
-    await _peopleFetchController?.drain()?.whenComplete(() => _peopleFetchController?.close());
-    await _peopleAddController?.drain()?.whenComplete(() => _peopleAddController?.close());
-    await _peopleRemoveController?.drain()?.whenComplete(() => _peopleRemoveController?.close());
-    await _peopleUpdateController?.drain()?.whenComplete(() => _peopleUpdateController?.close());
+    await _fetchController?.drain()?.whenComplete(() => _fetchController?.close());
+    await _addController?.drain()?.whenComplete(() => _addController?.close());
+    await _removeController?.drain()?.whenComplete(() => _removeController?.close());
+    await _updateController?.drain()?.whenComplete(() => _updateController?.close());
   }
 
   retrieveAll() async {
 
   }
 
-  submitNew({String name, String surname, String shortBio, int sectionID = -1, String imgURI}) async {
-
+  submitNewPerson(String name, String surname, {int section, String bio, String imageUri}) {
+    /* TODO request group id from repository */
+    final people = People(name, surname, 0, imageUri: imageUri, bio: bio, section: section);
+    _addPeople(people);
   }
 
   delete(People item) async {
-
+    _removePeople(item);
   }
 
   update(People item) async {
-
+    _updatePeople(item);
   }
 }
 
-class PeopleFormValidators {
+class _PeopleFormValidators {
   final validateNameSurname =
   StreamTransformer<String, String>.fromHandlers(handleData: (nameSurname, sink) {
     if(nameSurname.isEmpty) {

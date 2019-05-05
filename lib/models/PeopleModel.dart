@@ -1,29 +1,21 @@
 class People {
-  int uid;
-  int sectionID; //Reference to scout group section.
-  int groupID; //Reference to scout group
+  int id;
+  int section; //Reference to scout group section.
+  int group; //Reference to scout group
 
   /* people basic data */
   String name;
   String surname;
 
   /*  Extended */
-  String shortBio;
-  String imgURI;
+  String bio;
+  String imageUri;
 
-  People(
-      {this.uid, this.name, this.surname, this.shortBio, this.sectionID, this.groupID, this.imgURI});
+  People(this.name, this.surname, this.group, {this.id, this.section, this.bio, this.imageUri});
 
   factory People.fromJson(Map<String, dynamic> params) {
-    return new People(
-        name: params['name'],
-        surname: params['surname'],
-        shortBio: params['short'],
-        sectionID: params['sectionid'],
-        uid: params['uid'],
-        groupID: params['groupid'],
-        imgURI: params['imguri']
-    );
+    return People(params['name'], params['surname'], params['group'],
+        id: params['id'], section: params['section'], bio: params['bio'], imageUri: params['imageuri']);
   }
 
   factory People.fromMap(Map<String, dynamic> params) {
@@ -32,13 +24,13 @@ class People {
 
   Map<String, dynamic> toMap() {
     return {
-      'uid': uid,
-      'sectionid': sectionID,
+      'id': id,
+      'section': section,
       'name': name,
       'surname': surname,
-      'short': shortBio,
-      'groupid' : groupID,
-      'imguri' : imgURI,
+      'bio': bio,
+      'group': group,
+      'imageuri': imageUri,
     };
   }
 }
