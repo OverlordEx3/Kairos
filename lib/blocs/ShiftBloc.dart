@@ -27,7 +27,27 @@ class ShiftBloc {
   }
 
   Stream<ShiftState> eventHandler(ShiftEvent event, ShiftState currentState) {
+    switch(event.type) {
+      case ShiftEventType.stop:
 
+        break;
+
+      case ShiftEventType.cancel:
+
+        break;
+
+      case ShiftEventType.retrieve:
+
+        break;
+
+      case ShiftEventType.retrieveAll:
+
+        break;
+
+      case ShiftEventType.start:
+        
+        break;
+    }
   }
 
   emitEvent(ShiftEvent event) {
