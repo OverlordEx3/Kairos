@@ -3,54 +3,58 @@ import 'dart:async';
 
 /* Models */
 import '../models/ShiftModel.dart' show Shift, ShiftStatus;
-import '../models/AttendanceModel.dart' show Attendance;
-
-import '../Provider/ShiftProvider.dart' show ShiftLocalProvider;
-import '../Provider/AttendanceProvider.dart' show AttendanceProvider;
-import '../Repository/AttendanceRepository.dart' show AttendanceRepository;
-import 'package:count_me_in/Repository/ShiftRepository.dart';
-
-final ShiftBloc shiftBloc = ShiftBloc();
+export '../models/ShiftModel.dart' show ShiftStatus;
 
 class ShiftBloc {
   /* Control streams */
-  final _shiftFetchController = new PublishSubject<ShiftStatus>();
-  Stream<ShiftStatus> get shiftStatusStream => _shiftFetchController.stream;
-  Function(ShiftStatus) get _shiftStatusSink => _shiftFetchController.sink.add;
+  final PublishSubject<ShiftEvent> _eventController = PublishSubject<ShiftEvent>();
+  final BehaviorSubject<ShiftState> _statusController = BehaviorSubject<ShiftState>();
 
-  final _shiftAttendanceController = new PublishSubject<Map<int, bool>>();
-  Stream<Map<int, bool>> get _shiftAttendanceStream =>
-      _shiftAttendanceController.stream;
-  Function(Map<int, bool>) get _shiftAttendanceAddItem =>
-      _shiftAttendanceController.sink.add;
+  final ShiftState initialState = ShiftState.nullState();
+
+  dispose() {
+    _eventController?.close();
+    _statusController?.close();
+  }
 
   ShiftBloc() {
-  	_shiftAttendanceStream?.listen(_handleShiftAttendanceAdd);
+    _eventController.listen((ShiftEvent event) {
+      ShiftState currentState = _statusController.value ?? initialState;
+      eventHandler(event, currentState).forEach((state) {
+        _statusController.sink.add(state);
+      });
+    });
   }
 
-  dispose() async {
-  	_shiftAttendanceController?.drain()?.whenComplete(() => _shiftAttendanceController?.close());
-  	_shiftFetchController?.drain()?.whenComplete(()=> _shiftFetchController?.close());
-  }
-
-  void _handleShiftAttendanceAdd(Map<int, bool> params) {
-
-  }
-
-  requestNewShift() async {
+  Stream<ShiftState> eventHandler(ShiftEvent event, ShiftState currentState) {
 
   }
 
-  /* Map <int, bool> = map PeopleID with attendance true/false */
-  closeShift() async {
-
-  }
-
-  cancelShift() async {
-
-  }
-
-  setAttendant(int id, bool attendant) {
-
+  emitEvent(ShiftEvent event) {
+    _eventController.sink.add(event);
   }
 }
+
+enum ShiftEventType {
+  start,
+  stop,
+  cancel,
+  retrieve,
+  retrieveAll,
+}
+
+class ShiftEvent {
+  ShiftEventType type;
+  ShiftEvent({this.type = ShiftEventType.stop}) : assert(type != null);
+}
+
+class ShiftState {
+  ShiftStatus currentState;
+  List<Shift> shifts;
+  ShiftState({this.currentState: ShiftStatus.closed, this.shifts}) : assert(currentState != null);
+
+  factory ShiftState.nullState() {
+    return ShiftState(currentState: ShiftStatus.closed, shifts: []);
+  }
+}
+

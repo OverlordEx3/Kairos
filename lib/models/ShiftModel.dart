@@ -1,37 +1,37 @@
 
 enum ShiftStatus {
 	///Shift has an error
-  SHIFT_ERROR,
+  error,
 	/// Shift is recently created and empty
-  SHIFT_NEW,
+  empty,
 	/// Shift is filled with data and ready to be closed (and saved)
-  SHIFT_OPEN,
+  open,
 	/// Shift is closed and read-only.
-  SHIFT_CLOSED,
+  closed,
 	/// Shift was re-opened and filled with different data
-  SHIFT_EDITED
+  edited
 }
 
 class Shift {
-  int uid;
-  int date;
+  int id;
+  DateTime date;
   ShiftStatus status;
 
-  Shift({this.uid, this.date, this.status});
+  Shift({this.id, DateTime date, this.status});
 
 /* Constructors*/
   factory Shift.fromMap(Map<String, dynamic> parsedJson) {
     return Shift(
-      uid: parsedJson['uid'],
-      date: parsedJson['date'],
-      status: ShiftStatus.values[parsedJson['status']]
+        id: parsedJson['uid'],
+        date: DateTime.fromMillisecondsSinceEpoch(parsedJson['date']),
+        status: ShiftStatus.values[parsedJson['status']]
     );
   }
 
   Map<String, dynamic> toMap(){
     return <String, dynamic> {
-      'uid' : this.uid,
-      'date' : this.date,
+      'uid' : this.id,
+      'date' : this.date.millisecondsSinceEpoch,
       'status' : this.status.index
     };
   }
