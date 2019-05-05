@@ -1,29 +1,41 @@
 import '../models/PeopleModel.dart';
-import 'package:count_me_in/common/ICache.dart' show ICache;
 
 class PeopleRepository {
-  final ICache<int, People> cache;
 
-  PeopleRepository({this.cache});
+  PeopleRepository();
 
-  Future<People> add({Map<String, dynamic> params}) async {
+  Future<People> addPerson(People person) async {
 
+    return person;
   }
 
-  Future<bool> delete(int key, People item) async {
+  Future<bool> deletePerson(People item) async {
 
+    return false;
   }
 
-  Future<People> get({Map<String, dynamic> whereArgs}) async {
+  Future<People> getPersonById(int id) async {
 
+    return People('', '', -1);
   }
 
-  Future<List<People>> getAll({Map<String, dynamic> whereArgs}) async {
+  Future<List<People>> getAllPeopleBy({List<int> id, int group, int section}) async {
 
+    return <People>[];
   }
 
-  Future<People> update(int key,
-      {Map<String, dynamic> params, Map<String, dynamic> whereArgs}) async {
+  Future<People> updatePeople(People person) async {
 
+    return People('', '', -1);
+  }
+
+  int getPeopleSection(int id) {
+    /* TODO fetch and return */
+    return -1;
+  }
+
+  int getPeopleGroup(int id) {
+    /* TODO fetch and return */
+    return -1;
   }
 }
