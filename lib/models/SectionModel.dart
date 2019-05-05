@@ -5,20 +5,20 @@ class Section {
 	int color;
 
 	/* Foreign key */
-	int groupID;
+	int groupId;
 
-	Section(this.name, this.id, [this.color, this.groupID]);
+	Section(this.name, this.groupId, {this.color, this.id});
 
 	factory Section.fromMap(Map<String, dynamic> params) {
-		return Section(params['sectionname'], params['id'], params['color'], params['groupid']);
+		return Section(params['name'], params['groupid'], id: params['id'], color: params['color']);
 	}
 
 	Map<String, dynamic> toMap() {
 		return <String, dynamic> {
-			'sectionname' : this.name,
+			'name' : this.name,
 			'id' : this.id,
 			'color' : this.color,
-			'groupid' : this.groupID
+			'groupid' : this.groupId
 		};
 	}
 }
