@@ -58,9 +58,9 @@ class ShiftAttendanceDB {
 		return await db.update(shiftTableName, shift.toMap(), where: '$shiftPrimaryKey = ?', whereArgs: [shift.id]);
 	}
 
-	Future<int> deleteShift(Shift shift) async {
+	Future<int> deleteShift(int key) async {
 		final db = await MasterDatabase().database;
-		return await db.delete(shiftTableName, where: '$shiftPrimaryKey = ?', whereArgs: [shift.id]);
+		return await db.delete(shiftTableName, where: '$shiftPrimaryKey = ?', whereArgs: [key]);
 	}
 
 	Future<List<Shift>> getShiftsBy({int groupId, int sectionId, List<int> id}) async {
@@ -110,6 +110,14 @@ class ShiftAttendanceDB {
 		return null;
 	}
 
+	Future<List<Attendance>> addListAttendanceItems(List<Attendance> items) async {
+		items.forEach((attendance) async {
+			addAttendanceItem(attendance);
+		});
+
+		return items;
+	}
+
 	Future<int> updateAttendanceItem(Attendance item) async {
 		final db = await MasterDatabase().database;
 		return await db.update(attendanceTableName, item.toMap(), where: '$attendancePrimaryKey = ?', whereArgs: [item.id]);
@@ -130,7 +138,7 @@ class ShiftAttendanceDB {
 		return null;
 	}
 
-	Future<List<Attendance>> getAttendanceBy({int groupId, int sectionId, int personId, List<int> id}) async {
+	Future<List<Attendance>> getAttendanceBy({int groupId, int sectionId, int personId, int shiftId, List<int> id}) async {
 		bool nonUnique = false;
 		String whereClause;
 		List<dynamic> whereArgs;
@@ -156,6 +164,15 @@ class ShiftAttendanceDB {
 			}
 			whereClause += 'personid=?';
 			whereArgs.add(personId);
+			nonUnique = true;
+		}
+
+		if(shiftId != null) {
+			if(nonUnique == true) {
+				whereClause += ' AND ';
+			}
+			whereClause += 'shiftid=?';
+			whereArgs.add(shiftId);
 			nonUnique = true;
 		}
 

@@ -3,43 +3,49 @@ import 'dart:async';
 import '../models/ShiftModel.dart';
 import '../models/AttendanceModel.dart';
 
+import '../Provider/ShiftAttendanceProvider.dart';
+
 class ShiftAttendanceRepository {
-  Set<int> _attendant = Set<int>();
+  Set<Attendance> _attendant = Set<Attendance>();
   Shift currentShift;
   bool isShiftActive = false;
 
   Future<Shift> createNewShift(ShiftStatus status) async {
     final shift = Shift(status: status, date: DateTime.now());
     /* Provider  */
-
-    return shift;
+    currentShift = await ShiftAttendanceLocalProvider().addShift(shift);
+    return currentShift;
   }
 
   Future<Shift> updateShift(ShiftStatus status) async {
     currentShift.status = status;
     /* Provider */
+    ShiftAttendanceLocalProvider().updateShift(currentShift);
     return currentShift;
   }
 
-  Future<bool> removeShift(int id) async {
+  Future<bool> removeShift() async {
     /* Ask provider */
-    return false;
+    if(currentShift == null) return false;
+    final result = await ShiftAttendanceLocalProvider().deleteShift(currentShiftId);
+    if(result == true) currentShift = null;
+    return result;
   }
 
-  Future<List<Shift>> getShiftsBy({int id, int section, int group}) async {
-    return <Shift>[];
+  Future<List<Shift>> getShiftsBy({List<int> id, int section, int group}) async {
+    return ShiftAttendanceLocalProvider().retrieveAllShiftsBy(id: id, sectionId: section, groupId: group);
   }
 
-  void setCurrentAttendanceItem(int id, bool attendance) {
+  void setCurrentAttendanceItem(int personId, bool attendance, int group, {int section}) {
     if (attendance == true) {
-      _attendant.add(id);
+      _attendant.add(Attendance(true, personId, this.currentShiftId, group, sectionId: section));
     } else {
-      _attendant.removeWhere((attId) => attId == id);
+      _attendant.removeWhere((att) => att.personId == personId);
     }
   }
 
   bool getCurrentAttendanceItem(int id) {
-    return _attendant.contains(id);
+    return false;
   }
 
   Future<Attendance> addAttendance() async {
@@ -55,6 +61,8 @@ class ShiftAttendanceRepository {
   }
 
   Future<List<Attendance>> saveAttendanceList() async {
+    if(_attendant == null) return <Attendance>[];
+    ShiftAttendanceLocalProvider().addAttendanceListItems(_attendant.toList());
     return <Attendance>[];
   }
 
@@ -62,8 +70,8 @@ class ShiftAttendanceRepository {
     return <Attendance>[];
   }
 
-  Future<List<Attendance>> getAttendanceBy({int id, int shift, int section, int group}) async {
-    return <Attendance>[];
+  Future<List<Attendance>> getAttendanceBy({List<int> id, int shift, int section, int group, int personId}) async {
+    return await ShiftAttendanceLocalProvider().getAttendanceListBy(sectionId: section, groupId: group, shiftId: shift, personId: personId, id: id);
   }
 
   /* getters */

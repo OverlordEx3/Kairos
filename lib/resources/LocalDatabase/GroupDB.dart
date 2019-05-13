@@ -34,9 +34,9 @@ class GroupDB {
 		return await db.update(tableName, group.toMap(), where: '${this.primaryKey} = ?', whereArgs: [group.id]);
 	}
 
-	Future<int> deleteGroup(Group group) async {
+	Future<int> deleteGroup(int key) async {
 		final db = await MasterDatabase().database;
-		return await db.delete(tableName, where: '${this.primaryKey} = ?', whereArgs: [group.id]);
+		return await db.delete(tableName, where: '${this.primaryKey} = ?', whereArgs: [key]);
 	}
 
 	Future<Group> getGroupById(int id) async {

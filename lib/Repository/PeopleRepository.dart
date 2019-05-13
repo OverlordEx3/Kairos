@@ -1,41 +1,40 @@
 import '../models/PeopleModel.dart';
+import '../Provider/PeopleProvider.dart';
 
 class PeopleRepository {
-
   PeopleRepository();
 
   Future<People> addPerson(People person) async {
-
-    return person;
+    return await PeopleLocalProvider().add(person);
   }
 
   Future<bool> deletePerson(People item) async {
-
-    return false;
+    return await PeopleLocalProvider().delete(item.id);
   }
 
   Future<People> getPersonById(int id) async {
-
-    return People('', '', -1);
+    return await PeopleLocalProvider().retrieveById(id);
   }
 
   Future<List<People>> getAllPeopleBy({List<int> id, int group, int section}) async {
-
-    return <People>[];
+    return await PeopleLocalProvider().retrieveAll(groupId: group, sectionId: section, id: id);
   }
 
   Future<People> updatePeople(People person) async {
-
-    return People('', '', -1);
+    final result = await PeopleLocalProvider().update(person);
+    if(result > 0) return person;
+    return null;
   }
 
-  int getPeopleSection(int id) {
-    /* TODO fetch and return */
-    return -1;
+  Future<int> getPeopleSection(int id) async {
+    final people = await getPersonById(id);
+    if(people == null) return -1;
+    return people.section;
   }
 
-  int getPeopleGroup(int id) {
-    /* TODO fetch and return */
-    return -1;
+  Future<int> getPeopleGroup(int id) async {
+    final people = await getPersonById(id);
+    if(people == null) return -1;
+    return people.group;
   }
 }

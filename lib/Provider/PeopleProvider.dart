@@ -1,105 +1,34 @@
 import 'dart:async' show Future;
-import 'package:count_me_in/Provider/IProvider.dart' show IProvider, IProviderLocation;
 import '../models/PeopleModel.dart' show People;
 
 /* Get people */
-import '../resources/database/PeopleDB.dart' show peopleDatabase;
+import '../resources/LocalDatabase/PeopleDB.dart';
 
-class PeopleLocalProvider implements IProvider<People> {
-  IProviderLocation get location => IProviderLocation.local;
+class PeopleLocalProvider {
+  static final _instance = PeopleLocalProvider._internal();
+  factory PeopleLocalProvider() => _instance;
+  PeopleLocalProvider._internal();
 
-  PeopleLocalProvider() {
-    /* Check table before any operation */
-    peopleDatabase.initTable();
-  }
-
-  @override
-  Future<People> add(Map<String, dynamic> params) async{
-    final item = peopleDatabase.addPerson(params);
+  Future<People> add(People person) async{
+    final item = PeopleDB().addPerson(person);
     return await item;
   }
 
-  @override
   Future<bool> delete(int key) async {
-    final result = await peopleDatabase.deletePerson(key);
+    final result = await PeopleDB().deletePerson(key);
     if(result > 0) return true;
     return false;
   }
 
-  @override
-  Future<void> executeNonQuery(String query) {
-    // TODO: implement executeNonQuery
-    return null;
+  Future<People> retrieveById(int id) {
+    return PeopleDB().getPersonById(id);
   }
 
-  @override
-  Future<List<People>> executeQuery(String query) {
-    // TODO: implement executeQuery
-    return null;
+  Future<List<People>> retrieveAll({int groupId, int sectionId, List<int> id}) async {
+    return PeopleDB().getPeopleBy(groupId: groupId, sectionId: sectionId, id: id);
   }
 
-  @override
-  Future<People> retrieve({Map<String, dynamic> whereArgs}) {
-    // TODO: implement retrieve
-    return null;
+  Future<int> update(People item) async{
+    return await PeopleDB().updatePerson(item);
   }
-
-  @override
-  Future<List<People>> retrieveAll({Map<String, dynamic> whereArgs}) async {
-    return peopleDatabase.getAllPeople();
-  }
-
-  @override
-  Future<int> update(People item, {Map<String, dynamic> whereArgs}) async{
-    return await peopleDatabase.updatePerson(item);
-  }
-}
-
-class PeopleRemoteProvider implements IProvider<People> {
-  @override
-  // TODO: implement location
-  IProviderLocation get location => IProviderLocation.remote;
-
-  @override
-  Future<People> add(Map<String, dynamic> params) {
-    // TODO: implement add
-    return null;
-  }
-
-  @override
-  Future<bool> delete(int key) {
-    // TODO: implement delete
-    return null;
-  }
-
-  @override
-  Future<void> executeNonQuery(String query) {
-    // TODO: implement executeNonQuery
-    return null;
-  }
-
-  @override
-  Future<List<People>> executeQuery(String query) {
-    // TODO: implement executeQuery
-    return null;
-  }
-
-  @override
-  Future<People> retrieve({Map<String, dynamic> whereArgs}) {
-    // TODO: implement retrieve
-    return null;
-  }
-
-  @override
-  Future<List<People>> retrieveAll({Map<String, dynamic> whereArgs}) {
-    // TODO: implement retrieveAll
-    return null;
-  }
-
-  @override
-  Future<int> update(People item, {Map<String, dynamic> whereArgs}) {
-    // TODO: implement update
-    return null;
-  }
-
 }

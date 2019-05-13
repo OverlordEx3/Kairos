@@ -39,10 +39,10 @@ class SectionDB {
         where: '${this.primaryKey} = ?', whereArgs: [section.id]);
   }
 
-  Future<int> deleteSection(Section section) async {
+  Future<int> deleteSection(int key) async {
     final db = await MasterDatabase().database;
     return await db
-        .delete(tableName, where: '${this.primaryKey} = ?', whereArgs: [section.id]);
+        .delete(tableName, where: '${this.primaryKey} = ?', whereArgs: [key]);
   }
 
   Future<Section> getSectionFromID(int id) async {

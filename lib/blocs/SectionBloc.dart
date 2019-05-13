@@ -1,27 +1,26 @@
 import 'package:rxdart/rxdart.dart';
 import 'dart:async';
+import 'BlocBase.dart';
 
 /* Models */
 import '../models/SectionModel.dart';
+import '../Repository/SectionRepository.dart';
 
-class SectionBloc {
-	/* Repository to handle data and communicate with provider */
+class SectionBloc extends BlocEventStateBase<SectionEvent, SectionState> {
+	static final _instance = SectionBloc._internal();
 
-/* Control streams */
-	final PublishSubject<SectionEvent> _eventController = PublishSubject<SectionEvent>();
-	final BehaviorSubject<SectionState> _statusController = BehaviorSubject<SectionState>();
-
-	final SectionState initialState = SectionState.nullState();
-
-	dispose() {
-		_eventController?.close();
-		_statusController?.close();
-	}
+	factory SectionBloc() => _instance;
+	SectionBloc._internal() : super(initialState: SectionState.nullState());
 
 
-	Stream<SectionState> eventHandler(SectionEvent event, SectionState currentState) {
+	Stream<SectionState> eventHandler(SectionEvent event, SectionState currentState) async* {
 		switch(event.type) {
 			case SectionEventType.add:
+				final result = await SectionRepository().addSection(Section(event.name, event.group));
+				final sectionState = SectionState();
+				sectionState.queryResults.add(result);
+				sectionState.result = SectionResult.ok;
+				yield sectionState;
 
 				break;
 
@@ -30,23 +29,18 @@ class SectionBloc {
 				break;
 
 			case SectionEventType.get:
-
+				final result = await SectionRepository().getSectionById(event.section);
+				final sectionState = SectionState();
+				if(result == null) {
+					sectionState.result = SectionResult.notFound;
+					yield sectionState;
+				}
+				sectionState.queryResults.add(result);
+				sectionState.result = SectionResult.ok;
+				yield sectionState;
 				break;
 
 		}
-	}
-
-	emitEvent(SectionEvent event) {
-		_eventController.sink.add(event);
-	}
-
-	SectionBloc() {
-		_eventController.listen((event) {
-			SectionState currentState = _statusController.value ?? initialState;
-			eventHandler(event, currentState).forEach((state) {
-				_statusController.sink.add(state);
-			});
-		});
 	}
 }
 
@@ -56,12 +50,13 @@ enum  SectionEventType {
 	get
 }
 
-class SectionEvent {
+class SectionEvent extends BlocEvent {
 	SectionEventType type;
 	int id;
 	int section;
 	int group;
-	SectionEvent(this.group, {this.type = SectionEventType.get, this.id, this.section}) : assert(type != null);
+	String name;
+	SectionEvent(this.group, {this.type = SectionEventType.get, this.id, this.section, this.name}) : assert(type != null);
 }
 
 enum SectionResult{
@@ -70,7 +65,7 @@ enum SectionResult{
 	unknown
 }
 
-class SectionState {
+class SectionState extends BlocState {
 	List<Section> queryResults;
 	SectionResult result;
 	SectionState({this.result = SectionResult.ok, this.queryResults});

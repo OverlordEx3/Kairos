@@ -2,6 +2,8 @@ import 'package:rxdart/rxdart.dart';
 import 'dart:async';
 import '../models/PeopleModel.dart' show People;
 
+import '../Repository/PeopleRepository.dart';
+import '../Repository/GroupRepository.dart';
 
 final PeopleBloc peopleBloc = PeopleBloc();
 
@@ -40,11 +42,13 @@ class PeopleBloc extends _PeopleFormValidators{
 
   /* Private controller listener. All magic is done here */
   void _removeFromRepository(People key) async {
-
+    await PeopleRepository().deletePerson(key);
+    _addPeopleListSink(await PeopleRepository().getAllPeopleBy(group: GroupRepository().groupId));
   }
 
   void _addToRepository(People people) async {
-
+    await PeopleRepository().addPerson(people);
+    _addPeopleListSink(await PeopleRepository().getAllPeopleBy(group: GroupRepository().groupId));
   }
 
   void _updateRepository(People item) async {

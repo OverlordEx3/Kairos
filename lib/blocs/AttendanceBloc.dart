@@ -1,23 +1,16 @@
 import 'package:rxdart/rxdart.dart';
 import 'dart:async';
+import 'BlocBase.dart';
 
 /* Models */
 import '../models/AttendanceModel.dart';
+import '../Repository/ShiftAttendanceRepository.dart';
 
-class AttendanceBloc {
-	/* Repository to handle data and communicate with provider */
+class AttendanceBloc extends BlocEventStateBase<AttendanceEvent, AttendanceState>{
+	static final _instance = AttendanceBloc._internal();
 
-/* Control streams */
-	final PublishSubject<AttendanceEvent> _eventController = PublishSubject<AttendanceEvent>();
-	final BehaviorSubject<AttendanceState> _statusController = BehaviorSubject<AttendanceState>();
-
-	final AttendanceState initialState = AttendanceState.nullState();
-
-	dispose() {
-		_eventController?.close();
-		_statusController?.close();
-	}
-
+	factory AttendanceBloc() => _instance;
+	AttendanceBloc._internal() : super(initialState: AttendanceState.nullState());
 
 	Stream<AttendanceState> eventHandler(AttendanceEvent event, AttendanceState currentState) {
 		switch(event.type) {
@@ -39,19 +32,6 @@ class AttendanceBloc {
 
 		}
 	}
-
-	emitEvent(AttendanceEvent event) {
-		_eventController.sink.add(event);
-	}
-
-	AttendanceBloc() {
-		_eventController.listen((event) {
-			AttendanceState currentState = _statusController.value ?? initialState;
-			eventHandler(event, currentState).forEach((state) {
-				_statusController.sink.add(state);
-			});
-		});
-	}
 }
 
 enum  AttendanceEventType {
@@ -61,7 +41,7 @@ enum  AttendanceEventType {
 	get
 }
 
-class AttendanceEvent {
+class AttendanceEvent extends BlocEvent {
 	AttendanceEventType type;
 	int id;
 	int section;
@@ -75,7 +55,7 @@ enum AttendanceResult{
 	unknown
 }
 
-class AttendanceState {
+class AttendanceState extends BlocState {
 	List<Attendance> queryResults;
 	AttendanceResult result;
 	AttendanceState({this.result = AttendanceResult.ok, this.queryResults});
