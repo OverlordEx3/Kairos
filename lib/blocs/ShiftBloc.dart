@@ -1,27 +1,72 @@
 import 'package:rxdart/rxdart.dart';
+import 'dart:async';
+import 'BlocBase.dart';
 
-import '../models/ShiftModel.dart';
-import '../resources/ShiftRepository.dart';
+/* Models */
+import '../models/ShiftModel.dart' show Shift, ShiftStatus;
+export '../models/ShiftModel.dart' show ShiftStatus;
 
-final ShiftBloc shiftBloc = ShiftBloc();
+import '../Repository/ShiftAttendanceRepository.dart';
 
-class ShiftBloc {
-  final _shiftRepository = ShiftRepository();
+class ShiftBloc extends BlocEventStateBase<ShiftEvent, ShiftState>{
 
-  final _shiftFetch = new PublishSubject<ShiftStatus>();
+  Stream<ShiftState> eventHandler(ShiftEvent event, ShiftState currentState) async* {
+    ShiftState state;
+    switch(event.type) {
+      case ShiftEventType.stop:
+        state = ShiftState(currentState: ShiftStatus.error);
+        if(currentState.currentState == ShiftStatus.open || currentState.currentState == ShiftStatus.empty) {
+          ShiftAttendanceRepository().saveAttendanceList();
+          ShiftAttendanceRepository().updateShift(ShiftStatus.closed);
+          state.currentState = ShiftStatus.closed;
+        }
+        break;
 
-  /* Fetch possible changes in status */
-  Observable<ShiftStatus> get fetchShift => _shiftFetch.stream;
+      case ShiftEventType.cancel:
+        //Todo
+        break;
 
-  ShiftStatus fetchShiftStatus() {
-    return _shiftRepository.shiftStatus();
-  }
+      case ShiftEventType.retrieve:
 
-  requestNewShift() async {
-    final result = await _shiftRepository.requestNewShift();
-    if(result != ShiftStatus.SHIFT_ERROR) {
-      await _shiftFetch.stream.drain();
-      _shiftFetch.sink.add(_shiftRepository.shiftStatus());
+        break;
+
+      case ShiftEventType.retrieveAll:
+
+        break;
+
+      case ShiftEventType.start:
+        state = ShiftState(currentState: ShiftStatus.error);
+        if(currentState.currentState != ShiftStatus.empty || currentState.currentState != ShiftStatus.open) {
+          final result = ShiftAttendanceRepository().createNewShift(ShiftStatus.empty);
+          state.shifts.add(await result);
+          state.currentState = ShiftStatus.empty;
+        }
+        break;
     }
+    yield state;
   }
 }
+
+enum ShiftEventType {
+  start,
+  stop,
+  cancel,
+  retrieve,
+  retrieveAll,
+}
+
+class ShiftEvent extends BlocEvent{
+  ShiftEventType type;
+  ShiftEvent({this.type = ShiftEventType.stop}) : assert(type != null);
+}
+
+class ShiftState extends BlocState{
+  ShiftStatus currentState;
+  List<Shift> shifts;
+  ShiftState({this.currentState: ShiftStatus.closed, this.shifts}) : assert(currentState != null);
+
+  factory ShiftState.nullState() {
+    return ShiftState(currentState: ShiftStatus.closed, shifts: []);
+  }
+}
+

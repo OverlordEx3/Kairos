@@ -1,47 +1,36 @@
-class _PeopleModel {
-  int uid;
-  int sectionID; //Reference to scout group session.
-  int hash;
+class People {
+  int id;
+  int section; //Reference to scout group section.
+  int group; //Reference to scout group
 
   /* people basic data */
   String name;
   String surname;
 
   /*  Extended */
-  String shortBio;
-  /* TODO Add image support */
+  String bio;
+  String imageUri;
 
-  _PeopleModel(
-      {this.uid, this.name, this.surname, this.shortBio, this.sectionID});
+  People(this.name, this.surname, this.group, {this.id, this.section, this.bio, this.imageUri});
 
-  factory _PeopleModel.fromJson(Map<String, dynamic> params) {
-    return new _PeopleModel(
-        name: params['name'],
-        surname: params['surname'],
-        shortBio: params['shortbio'],
-        sectionID: params['section'],
-        uid: params['uid']);
+  factory People.fromJson(Map<String, dynamic> params) {
+    return People(params['name'], params['surname'], params['group'],
+        id: params['id'], section: params['section'], bio: params['bio'], imageUri: params['imageuri']);
+  }
+
+  factory People.fromMap(Map<String, dynamic> params) {
+    return People.fromJson(params);
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'uid': uid,
-      'section': sectionID,
+      'id': id,
+      'section': section,
       'name': name,
       'surname': surname,
-      'short': shortBio,
+      'bio': bio,
+      'group': group,
+      'imageuri': imageUri,
     };
   }
-}
-
-/* Aliasing */
-
-class People extends _PeopleModel {
-  People({int uniqueID, String name, String surname, String shortBio, int sectionID})
-      : super(
-            uid: uniqueID,
-            name: name,
-            surname: surname,
-            shortBio: shortBio,
-            sectionID: sectionID);
 }
