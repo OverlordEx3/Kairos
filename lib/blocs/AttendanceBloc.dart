@@ -12,25 +12,31 @@ class AttendanceBloc extends BlocEventStateBase<AttendanceEvent, AttendanceState
 	factory AttendanceBloc() => _instance;
 	AttendanceBloc._internal() : super(initialState: AttendanceState.nullState());
 
-	Stream<AttendanceState> eventHandler(AttendanceEvent event, AttendanceState currentState) {
+	Stream<AttendanceState> eventHandler(AttendanceEvent event, AttendanceState currentState) async* {
+		AttendanceState state;
 		switch(event.type) {
 			case AttendanceEventType.add:
-
+				ShiftAttendanceRepository().setCurrentAttendanceItem(event.person, true, event.group, section: event.section);
+				state = AttendanceState(result: AttendanceResult.ok);
 				break;
 
 			case AttendanceEventType.remove:
-
+				ShiftAttendanceRepository().setCurrentAttendanceItem(event.person, false, event.group, section: event.section);
+				state = AttendanceState(result: AttendanceResult.ok);
 				break;
 
 			case AttendanceEventType.clear:
-
+				ShiftAttendanceRepository().clearAttendanceList();
+				state = AttendanceState(result: AttendanceResult.ok);
 				break;
 
 			case AttendanceEventType.get:
-
+				ShiftAttendanceRepository().getAttendanceBy(section: event.section, group: event.group, personId: event.person, shift: event.shift);
+				state = AttendanceState(result: AttendanceResult.ok);
 				break;
-
 		}
+
+		yield state;
 	}
 }
 
@@ -46,7 +52,9 @@ class AttendanceEvent extends BlocEvent {
 	int id;
 	int section;
 	int person;
-	AttendanceEvent({this.type = AttendanceEventType.clear, this.id, this.section, this.person}) : assert(type != null);
+	int group;
+	int shift;
+	AttendanceEvent({this.type = AttendanceEventType.clear, this.id, this.section, this.person, this.group, this.shift}) : assert(type != null);
 }
 
 enum AttendanceResult{

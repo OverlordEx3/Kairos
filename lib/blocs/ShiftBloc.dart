@@ -1,39 +1,29 @@
 import 'package:rxdart/rxdart.dart';
 import 'dart:async';
+import 'BlocBase.dart';
 
 /* Models */
 import '../models/ShiftModel.dart' show Shift, ShiftStatus;
 export '../models/ShiftModel.dart' show ShiftStatus;
 
-class ShiftBloc {
-  /* Control streams */
-  final PublishSubject<ShiftEvent> _eventController = PublishSubject<ShiftEvent>();
-  final BehaviorSubject<ShiftState> _statusController = BehaviorSubject<ShiftState>();
+import '../Repository/ShiftAttendanceRepository.dart';
 
-  final ShiftState initialState = ShiftState.nullState();
+class ShiftBloc extends BlocEventStateBase<ShiftEvent, ShiftState>{
 
-  dispose() {
-    _eventController?.close();
-    _statusController?.close();
-  }
-
-  ShiftBloc() {
-    _eventController.listen((ShiftEvent event) {
-      ShiftState currentState = _statusController.value ?? initialState;
-      eventHandler(event, currentState).forEach((state) {
-        _statusController.sink.add(state);
-      });
-    });
-  }
-
-  Stream<ShiftState> eventHandler(ShiftEvent event, ShiftState currentState) {
+  Stream<ShiftState> eventHandler(ShiftEvent event, ShiftState currentState) async* {
+    ShiftState state;
     switch(event.type) {
       case ShiftEventType.stop:
-
+        state = ShiftState(currentState: ShiftStatus.error);
+        if(currentState.currentState == ShiftStatus.open || currentState.currentState == ShiftStatus.empty) {
+          ShiftAttendanceRepository().saveAttendanceList();
+          ShiftAttendanceRepository().updateShift(ShiftStatus.closed);
+          state.currentState = ShiftStatus.closed;
+        }
         break;
 
       case ShiftEventType.cancel:
-
+        //Todo
         break;
 
       case ShiftEventType.retrieve:
@@ -45,13 +35,15 @@ class ShiftBloc {
         break;
 
       case ShiftEventType.start:
-        
+        state = ShiftState(currentState: ShiftStatus.error);
+        if(currentState.currentState != ShiftStatus.empty || currentState.currentState != ShiftStatus.open) {
+          final result = ShiftAttendanceRepository().createNewShift(ShiftStatus.empty);
+          state.shifts.add(await result);
+          state.currentState = ShiftStatus.empty;
+        }
         break;
     }
-  }
-
-  emitEvent(ShiftEvent event) {
-    _eventController.sink.add(event);
+    yield state;
   }
 }
 
@@ -63,12 +55,12 @@ enum ShiftEventType {
   retrieveAll,
 }
 
-class ShiftEvent {
+class ShiftEvent extends BlocEvent{
   ShiftEventType type;
   ShiftEvent({this.type = ShiftEventType.stop}) : assert(type != null);
 }
 
-class ShiftState {
+class ShiftState extends BlocState{
   ShiftStatus currentState;
   List<Shift> shifts;
   ShiftState({this.currentState: ShiftStatus.closed, this.shifts}) : assert(currentState != null);

@@ -44,6 +44,10 @@ class ShiftAttendanceRepository {
     }
   }
 
+  void clearAttendanceList() {
+    _attendant.clear();
+  }
+
   bool getCurrentAttendanceItem(int id) {
     return false;
   }
@@ -63,7 +67,7 @@ class ShiftAttendanceRepository {
   Future<List<Attendance>> saveAttendanceList() async {
     if(_attendant == null) return <Attendance>[];
     ShiftAttendanceLocalProvider().addAttendanceListItems(_attendant.toList());
-    return <Attendance>[];
+    return _attendant.toList();
   }
 
   Future<List<Attendance>> updateAttendanceList() async {
